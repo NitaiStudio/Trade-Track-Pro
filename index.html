@@ -3,35 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>TradeTrack Pro | Nitai Studio</title>
 
-    <!-- Google Material Icons & Plus Jakarta Font -->
+    <!-- Firebase Legacy SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <!-- Google Material Icons & Fonts -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg: #000000;
-            --surface: rgba(255, 255, 255, 0.05);
+            --bg: #050505;
+            --surface: rgba(22, 22, 22, 0.85);
             --primary: #d0bcff;
             --secondary: #b0a1cf;
-            --neon-blue: #00f2ff;
-            --neon-purple: #9d00ff;
+            --accent: #00f2ff;
             --error: #ff5252;
             --success: #00e676;
             --text: #ffffff;
             --text-dim: #999999;
-            --border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --neon-glow: 0 0 15px rgba(208, 188, 255, 0.3);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
         body, html {
             margin: 0; padding: 0;
-            background-color: #050505;
+            background-color: #000;
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
             height: 100vh; width: 100vw;
@@ -39,207 +43,200 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- Application Container (Mobile & Windows Compatible) --- */
+        /* --- Main Responsive Shell --- */
         .app-shell {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             max-width: 480px;
-            background: radial-gradient(circle at top right, #151515, #000);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border-left: 1px solid var(--border);
-            border-right: 1px solid var(--border);
+            background: linear-gradient(180deg, #101010 0%, #000000 100%);
+            position: relative; display: flex; flex-direction: column; overflow: hidden;
+            border-left: 1px solid var(--glass-border);
+            border-right: 1px solid var(--glass-border);
         }
 
         @media screen and (min-width: 600px) {
-            .app-shell {
-                height: 92vh;
-                border-radius: 40px;
-                border: 2px solid var(--border);
-                box-shadow: 0 0 50px rgba(208, 188, 255, 0.1);
-            }
+            .app-shell { height: 94vh; border-radius: 45px; border: 1.5px solid var(--glass-border); box-shadow: 0 0 60px rgba(0,0,0,1); }
         }
 
         /* --- Scrollable Content Area --- */
-        .content-container {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 120px;
+        .content-area {
+            flex: 1; overflow-y: auto;
+            padding-bottom: 110px;
             scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
         }
-        .content-container::-webkit-scrollbar { display: none; }
+        .content-area::-webkit-scrollbar { display: none; }
 
-        /* --- Splash Screen Unique Animation --- */
+        /* --- UNIQUE ANIMATIONS --- */
+        @keyframes logoPulse { 0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--primary)); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 25px var(--primary)); } 100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--primary)); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- Splash Screen --- */
         #splash {
             position: absolute; inset: 0; background: #000; z-index: 10000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .logo-neon {
-            width: 110px; height: 110px; background: #111; border-radius: 35px;
+        .logo-box {
+            width: 115px; height: 115px; background: #151515; border-radius: 35px;
             display: flex; align-items: center; justify-content: center;
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 20px var(--primary);
-            animation: pulse-neon 2.5s infinite;
+            border: 2px solid var(--primary); animation: logoPulse 3s infinite ease-in-out;
         }
-        @keyframes pulse-neon {
-            0% { transform: scale(1); box-shadow: 0 0 10px var(--primary); }
-            50% { transform: scale(1.08); box-shadow: 0 0 40px var(--primary); }
-            100% { transform: scale(1); box-shadow: 0 0 10px var(--primary); }
+        .logo-box i { font-size: 65px; color: var(--primary); }
+
+        /* --- Premium Cards --- */
+        .glass-card {
+            background: var(--surface); backdrop-filter: blur(25px);
+            border-radius: 32px; padding: 25px; margin: 15px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            animation: slideUp 0.6s ease-out;
         }
 
-        /* --- Neon Glass Cards --- */
-        .neon-card {
-            background: var(--surface);
-            backdrop-filter: blur(25px);
-            border-radius: 30px; padding: 25px; margin: 15px;
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slide-up 0.5s ease;
-        }
-        @keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- Stats Design --- */
+        .periodic-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 15px 15px 15px; }
+        .p-stat { background: rgba(255,255,255,0.03); padding: 14px 10px; border-radius: 24px; text-align: center; border: 1px solid var(--glass-border); }
+        .p-stat small { font-size: 9px; color: var(--text-dim); display: block; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+        .p-stat div { font-size: 14px; font-weight: 800; }
 
-        .btn-premium {
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 15px; }
+        .stat-box { background: #111; padding: 22px; border-radius: 30px; border: 1.5px solid var(--glass-border); position: relative; overflow: hidden; }
+        .stat-box::after { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background: var(--primary); }
+
+        /* --- Form Elements --- */
+        .btn-neon {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #000; border: none; padding: 18px; border-radius: 20px;
+            color: #000; border: none; padding: 18px; border-radius: 22px;
             font-weight: 800; cursor: pointer; width: 100%; display: flex;
             align-items: center; justify-content: center; gap: 10px; font-size: 15px;
             text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+            box-shadow: var(--neon-glow);
         }
-        .btn-premium:active { transform: scale(0.96); }
+        .btn-neon:active { transform: scale(0.95); opacity: 0.8; }
 
         input, select, textarea {
-            width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border);
-            padding: 16px; border-radius: 18px; color: #fff; margin-bottom: 8px; font-size: 16px;
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            padding: 16px; border-radius: 18px; color: #fff; margin-bottom: 12px; font-size: 16px;
+            transition: 0.3s;
         }
-        input:focus { border-color: var(--neon-blue); outline: none; }
-
-        label { display: block; font-size: 12px; color: var(--primary); margin: 12px 0 6px 8px; font-weight: 800; text-transform: uppercase; }
+        input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+        label { display: block; font-size: 11px; color: var(--primary); margin: 0 0 6px 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* --- Floating Navigation --- */
         nav {
             position: absolute; bottom: 25px; left: 15px; right: 15px; height: 80px;
-            background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(30px);
+            background: rgba(25, 25, 25, 0.8); backdrop-filter: blur(30px);
             display: flex; justify-content: space-around; align-items: center;
-            border-radius: 28px; border: 1px solid var(--border); z-index: 999;
+            border-radius: 30px; border: 1px solid var(--glass-border); z-index: 999;
             box-shadow: 0 20px 40px rgba(0,0,0,0.8);
         }
-        .nav-item { 
-            background: none; border: none; color: var(--text-dim); 
-            display: flex; flex-direction: column; align-items: center; 
-            cursor: pointer; font-size: 10px; font-weight: 800; flex: 1;
-        }
-        .nav-item.active { color: var(--neon-blue); }
+        .nav-item { background: none; border: none; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; flex: 1; cursor: pointer; font-weight: 800; font-size: 10px; transition: 0.3s; }
+        .nav-item.active { color: var(--accent); }
         .nav-item i { font-size: 30px; margin-bottom: 2px; transition: 0.3s; }
-        .nav-item.active i { transform: translateY(-5px) scale(1.1); text-shadow: 0 0 15px var(--neon-blue); }
+        .nav-item.active i { transform: translateY(-6px) scale(1.15); text-shadow: 0 0 15px var(--accent); }
 
-        /* --- Screens & Overlays --- */
+        /* --- Overlays --- */
+        .overlay { position: absolute; inset: 0; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 25px; animation: fadeIn 0.4s ease; }
+        .modal { background: #0a0a0a; padding: 35px; border-radius: 45px; width: 100%; border: 1px solid var(--glass-border); text-align: center; }
+
         .screen { display: none; }
-        .screen.active { display: block; }
-        .overlay { position: absolute; inset: 0; background: #000; z-index: 2000; padding: 25px; display: flex; align-items: center; justify-content: center; }
-        .modal { background: #0a0a0a; padding: 35px; border-radius: 45px; width: 100%; border: 1px solid var(--border); text-align: center; }
-
+        .screen.active { display: block; animation: slideUp 0.5s ease-out; }
         .hidden { display: none !important; }
 
-        /* --- Stats Layout --- */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 15px; }
-        .stat-box { background: rgba(255,255,255,0.03); padding: 22px; border-radius: 30px; border: 1px solid var(--border); }
-
-        .log-item { background: rgba(255,255,255,0.02); border-radius: 25px; padding: 20px; margin: 10px 15px; border-left: 6px solid #222; }
-
-        /* Support Buttons */
-        .support-link { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 15px; border-radius: 18px; background: #111; border: 1px solid var(--border); text-decoration: none; color: #fff; font-size: 12px; font-weight: 800; margin-top: 10px; }
+        .journal-log { background: rgba(255,255,255,0.02); border-radius: 28px; padding: 20px; margin: 12px 15px; border-left: 6px solid #222; }
 
         header { padding: 45px 25px 15px 25px; }
-        h1 { font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+        h1 { font-size: 30px; font-weight: 800; margin: 0; letter-spacing: -1px; }
+
+        .support-card { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 20px; background: #111; border: 1px solid var(--glass-border); text-decoration: none; color: #fff; font-size: 12px; font-weight: 800; margin-top: 12px; }
     </style>
 </head>
 <body>
 
     <div class="app-shell">
-        <!-- 1. Unique Animated Splash -->
+        <!-- Animated Splash Screen -->
         <div id="splash">
-            <div class="logo-neon">
-                <i class="material-icons-round" style="font-size: 65px; color: var(--primary);">trending_up</i>
-            </div>
-            <h2 style="margin:25px 0 5px 0; letter-spacing: 1px;">TradeTrack Pro</h2>
-            <p style="color: var(--primary); font-weight: 700; letter-spacing: 2px; font-size: 12px;">NITAI STUDIO</p>
+            <div class="logo-box"><i class="material-icons-round">query_stats</i></div>
+            <h2 style="margin:25px 0 5px 0; letter-spacing:1px; font-weight:800;">TradeTrack Pro</h2>
+            <p style="color:var(--primary); font-weight:800; letter-spacing:3px; font-size:12px;">NITAI STUDIO</p>
         </div>
 
-        <!-- 2. Integrated Login Overlay -->
+        <!-- Restoration Login with Country Picker -->
         <div id="login-overlay" class="overlay hidden">
             <div class="modal">
-                <div class="logo-neon" style="width:70px; height:70px; margin: 0 auto 20px auto; border-radius: 20px;">
-                    <i class="material-icons-round">vpn_key</i>
-                </div>
-                <h2 style="margin:0 0 10px 0">Login</h2>
-                <label>Choose Language</label>
+                <div class="logo-box" style="width:80px; height:80px; margin: 0 auto 20px auto; border-radius:24px;"><i class="material-icons-round">cloud_sync</i></div>
+                <h2 style="margin:0 0 5px 0">Cloud Sync</h2>
+                <p style="font-size:12px; color:var(--text-dim); margin-bottom:25px;">Select country & number to restore your data.</p>
+                
+                <label>Language</label>
                 <select id="app-lang" onchange="app.updateLanguage()">
                     <option value="en">English (Global)</option>
-                    <option value="bn">বাংলা (India/BD)</option>
+                    <option value="bn">বাংলা (BD/India)</option>
                     <option value="hi">हिन्दी (India)</option>
                 </select>
+
+                <label>Country</label>
+                <select id="user-country">
+                    <option value="+91">🇮🇳 India (+91)</option>
+                    <option value="+880">🇧🇩 Bangladesh (+880)</option>
+                    <option value="+1">🇺🇸 USA (+1)</option>
+                    <option value="+44">🇬🇧 UK (+44)</option>
+                </select>
+
                 <label>Mobile Number</label>
-                <input type="tel" id="user-mobile" placeholder="9876543210">
-                <button class="btn-premium" style="margin-top:20px;" onclick="app.doLogin()">Confirm Account</button>
+                <input type="tel" id="user-mobile" placeholder="9876543210" maxlength="10">
+                
+                <button class="btn-neon" style="margin-top:10px;" onclick="app.doLogin()">Restore Data</button>
             </div>
         </div>
 
-        <!-- 3. Mandatory Policy Notice -->
+        <!-- Disclaimer -->
         <div id="notice-overlay" class="overlay hidden">
             <div class="modal">
-                <h2 style="color:var(--error); margin-top:0">POLICY NOTICE</h2>
-                <div style="max-height: 50vh; overflow-y: auto; text-align: left; padding: 10px;">
-                    <p id="l-notice-text" style="font-size: 14px; line-height: 1.8; color: var(--text-dim);"></p>
-                </div>
-                <button class="btn-premium" style="margin-top:20px;" onclick="app.acceptNotice()">I UNDERSTAND & AGREE</button>
+                <h2 style="color:var(--error); margin:0">IMPORTANT</h2>
+                <div style="max-height:45vh; overflow-y:auto; text-align:left; padding:15px; margin-top:15px; font-size:14px; color:var(--text-dim); line-height:1.7;" id="l-notice-text"></div>
+                <button class="btn-neon" style="margin-top:20px" onclick="app.acceptNotice()">I UNDERSTAND</button>
             </div>
         </div>
 
-        <!-- 4. Main App Interface -->
-        <div class="content-container" id="main-content" style="display:none;">
+        <!-- Main Content Area -->
+        <div class="content-area" id="main-content" style="display:none;">
             <header>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h1 id="screen-title">Dashboard</h1>
-                    <div style="width: 50px; height: 50px; background: var(--surface); border-radius: 15px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);" onclick="app.navigate('info')">
-                        <i class="material-icons-round" style="color: var(--primary)">person</i>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h1 id="screen-title">Journal</h1>
+                    <div style="width:50px; height:50px; background:var(--surface); border-radius:18px; display:flex; align-items:center; justify-content:center; border:1px solid var(--glass-border);" onclick="app.navigate('info')">
+                        <i class="material-icons-round" style="color:var(--primary); font-size:28px;">person</i>
                     </div>
                 </div>
-                <div id="user-id-tag" style="font-size: 11px; color: var(--neon-blue); font-weight: 800; margin-top: 8px;"></div>
+                <div id="user-id-tag" style="font-size:11px; color:var(--accent); font-weight:800; margin-top:8px; text-transform:uppercase;"></div>
             </header>
 
-            <!-- Screen: Home Dash -->
+            <!-- Dash Screen with Periodic Stats -->
             <div id="scr-dash" class="screen">
+                <div class="periodic-summary">
+                    <div class="p-stat"><small id="l-today">Today</small><div id="d-today">₹0</div></div>
+                    <div class="p-stat"><small id="l-weekly">Weekly</small><div id="d-weekly">₹0</div></div>
+                    <div class="p-stat"><small id="l-monthly">Monthly</small><div id="d-monthly">₹0</div></div>
+                </div>
+
                 <div class="stat-grid">
-                    <div class="stat-box" style="border-bottom: 3px solid var(--neon-blue);">
-                        <small id="l-win-rate" style="color: var(--text-dim); font-size: 9px; font-weight: 800;">WIN RATE</small>
-                        <div style="font-size: 26px; font-weight: 800; color: var(--neon-blue); margin-top: 5px;" id="d-win">0%</div>
-                    </div>
-                    <div class="stat-box" style="border-bottom: 3px solid var(--primary);">
-                        <small id="l-avg-rr" style="color: var(--text-dim); font-size: 9px; font-weight: 800;">AVG RR</small>
-                        <div style="font-size: 26px; font-weight: 800; margin-top: 5px;" id="d-rr">0.00</div>
-                    </div>
+                    <div class="stat-box" style="border-bottom-color:var(--neon-blue);"><small id="l-win-rate">Win Rate</small><div style="font-size:28px; font-weight:800; color:var(--accent); margin-top:5px;" id="d-win">0%</div></div>
+                    <div class="stat-box" style="border-bottom-color:var(--primary);"><small id="l-avg-rr">Avg RR</small><div style="font-size:28px; font-weight:800; margin-top:5px;" id="d-rr">0.00</div></div>
                 </div>
-                <div class="stat-grid" style="margin-top: 15px;">
-                    <div class="stat-box">
-                        <small id="l-total-inv" style="color: var(--text-dim); font-size: 9px;">INVESTED</small>
-                        <div style="font-size: 20px; font-weight: 800; margin-top: 5px;" id="d-inv">₹0</div>
-                    </div>
-                    <div class="stat-box" style="border-bottom-color: var(--error);">
-                        <small id="l-net-pnl" style="color: var(--text-dim); font-size: 9px;">NET P/L</small>
-                        <div style="font-size: 20px; font-weight: 800; margin-top: 5px;" id="d-pnl">₹0</div>
-                    </div>
+
+                <div class="stat-grid" style="margin-top:15px">
+                    <div class="stat-box" style="border-bottom-color:#555;"><small id="l-total-inv">Total Invest</small><div style="font-size:20px; font-weight:800; margin-top:5px;" id="d-inv">₹0</div></div>
+                    <div class="stat-box" style="border-bottom-color:var(--error);"><small id="l-net-pnl">Overall P/L</small><div style="font-size:20px; font-weight:800; margin-top:5px;" id="d-pnl">₹0</div></div>
                 </div>
-                <div style="padding: 30px 25px 10px 25px;"><h3 id="l-recent-head" style="margin:0; font-size: 18px;">Recent Journal Logs</h3></div>
+
+                <div style="padding:35px 25px 10px 25px;"><h3 id="l-recent-head" style="margin:0; font-size:20px;">Recent Entries</h3></div>
                 <div id="list-recent"></div>
             </div>
 
-            <!-- Screen: Add Journal Entry -->
+            <!-- Add Entry Screen -->
             <div id="scr-add" class="screen">
-                <div class="neon-card">
-                    <label id="l-date">Date</label>
+                <div class="glass-card">
+                    <label id="l-date">Trade Date</label>
                     <input type="date" id="t-date">
                     
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
@@ -253,7 +250,7 @@
                             </select>
                         </div>
                         <div>
-                            <label id="l-logic">Strategy</label>
+                            <label id="l-logic">Trade Logic</label>
                             <select id="t-logic">
                                 <option value="Breakout">Breakout</option>
                                 <option value="Trend">Trend Follow</option>
@@ -262,7 +259,7 @@
                         </div>
                     </div>
 
-                    <label id="l-symbol">Asset Name</label>
+                    <label id="l-symbol">Asset Symbol</label>
                     <input type="text" id="t-symbol" placeholder="BTC, NIFTY, GOLD">
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
@@ -277,70 +274,79 @@
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
-                        <div><label id="l-bq">Buy Price</label><input type="number" id="t-bq" placeholder="0"></div>
-                        <div><label id="l-sq">Sell Price</label><input type="number" id="t-sq" placeholder="0"></div>
+                        <div><label id="l-bq">Buying Value</label><input type="number" id="t-bq" placeholder="0"></div>
+                        <div><label id="l-sq">Selling Value</label><input type="number" id="t-sq" placeholder="0"></div>
                     </div>
 
-                    <label id="l-mistake">Notes / Logic</label>
+                    <label id="l-mistake">Notes / Mistakes</label>
                     <textarea id="t-mistake" rows="3" placeholder="What happened in this trade?"></textarea>
 
-                    <button class="btn-premium" style="margin-top:20px" onclick="app.saveEntry()" id="l-save-btn">Save Journal</button>
+                    <button class="btn-neon" style="margin-top:20px" onclick="app.saveEntry()" id="l-save-btn">Sync to Journal</button>
                 </div>
             </div>
 
-            <!-- Screen: History Logs -->
-            <div id="scr-history" class="screen">
-                <div id="list-history"></div>
-            </div>
+            <!-- Full History Screen -->
+            <div id="scr-history" class="screen"><div id="list-history"></div></div>
 
-            <!-- Screen: Nitai Studio Support -->
+            <!-- Support & Profile Screen -->
             <div id="scr-info" class="screen">
-                <div class="neon-card" style="text-align: center;">
-                    <div class="logo-neon" style="width: 80px; height: 80px; margin: 0 auto 20px auto; border-radius: 20px;">
-                        <i class="material-icons-round" style="font-size: 50px;">person</i>
-                    </div>
-                    <h2 style="margin: 0; color: var(--primary);">NITAI STUDIO</h2>
-                    <p style="font-size: 13px; color: var(--text-dim);">Global Trading Tracker Tool</p>
+                <div class="glass-card" style="text-align:center;">
+                    <div class="logo-box" style="width:85px; height:85px; margin: 0 auto 20px auto; border-radius:24px;"><i class="material-icons-round">person</i></div>
+                    <h2 style="margin:0; color:var(--primary);">NITAI STUDIO</h2>
+                    <p style="font-size:14px; color:var(--text-dim);">Global Cloud-Sync Journal</p>
                     
-                    <div style="margin: 25px 0;">
-                        <p style="font-size: 11px; font-weight: 800; color: var(--neon-blue); text-transform: uppercase;">Support the Dev</p>
-                        <a href="https://buymeacoffee.com/nitaigrp00a" class="support-link"><i class="material-icons-round">coffee</i> Buy Me a Coffee</a>
-                        <a href="https://ko-fi.com/nitaisarkar" class="support-link"><i class="material-icons-round">favorite</i> Ko-fi Support</a>
-                        <a href="https://www.patreon.com/cw/NitaiStudio" class="support-link"><i class="material-icons-round">stars</i> Patreon Support</a>
-                        <button class="support-link" style="width:100%; border:none;" id="pwa-install-btn"><i class="material-icons-round">install_mobile</i> Install App</button>
+                    <div style="margin:25px 0;">
+                        <p style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase;">Donate & Support</p>
+                        <a href="https://buymeacoffee.com/nitaigrp00a" class="support-card"><i class="material-icons-round">coffee</i> Buy Me a Coffee</a>
+                        <a href="https://ko-fi.com/nitaisarkar" class="support-card"><i class="material-icons-round">favorite</i> Ko-fi Support</a>
+                        <a href="https://www.patreon.com/cw/NitaiStudio" class="support-card"><i class="material-icons-round">stars</i> Patreon Support</a>
+                        <button class="support-card" style="width:100%; border:none; cursor:pointer;" onclick="app.installPWA()"><i class="material-icons-round">download</i> Install Pro App</button>
                     </div>
 
-                    <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">nitai.grp00@gmail.com</div>
-                    <button class="btn-premium" style="background: var(--error); color: #fff;" onclick="app.logout()">Logout Account</button>
+                    <div style="font-size:12px; color:var(--text-dim); margin-bottom:20px;">nitai.grp00@gmail.com</div>
+                    <button class="btn-neon" style="background:var(--error); color:#fff;" onclick="app.logout()">Logout My Account</button>
                 </div>
             </div>
         </div>
 
-        <!-- Floating Navbar -->
+        <!-- Floating Premium Navigation Bar -->
         <nav id="navbar" style="display:none;">
-            <button class="nav-item active" onclick="app.navigate('dash')"><i class="material-icons-round">dashboard</i><span>Dash</span></button>
-            <button class="nav-item" onclick="app.navigate('history')"><i class="material-icons-round">list_alt</i><span>Logs</span></button>
-            <button class="nav-item" onclick="app.navigate('add')"><i class="material-icons-round" style="font-size:45px; color:var(--primary); margin-top:-10px">add_circle</i><span>New</span></button>
-            <button class="nav-item" onclick="app.navigate('info')"><i class="material-icons-round">support_agent</i><span>Support</span></button>
+            <button class="nav-item active" onclick="app.navigate('dash')"><i class="material-icons-round">dashboard</i><span id="n-dash">Home</span></button>
+            <button class="nav-item" onclick="app.navigate('history')"><i class="material-icons-round">list_alt</i><span id="n-history">Logs</span></button>
+            <button class="nav-item" onclick="app.navigate('add')"><i class="material-icons-round" style="font-size:45px; color:var(--primary); margin-top:-10px">add_circle</i><span id="n-add">New</span></button>
+            <button class="nav-item" onclick="app.navigate('info')"><i class="material-icons-round">support_agent</i><span id="n-info">Support</span></button>
         </nav>
     </div>
 
     <script>
+        // --- 1. FIREBASE CONFIG (নিচের ডাটা আপনার Firebase থেকে পরিবর্তন করুন) ---
+        const firebaseConfig = {
+  apiKey: "AIzaSyBXAYmNjcXXUqbkNFdzVa6TbxotPH9PcNM",
+  authDomain: "trade-track-pro-cd6a7.firebaseapp.com",
+  databaseURL: "https://trade-track-pro-cd6a7-default-rtdb.firebaseio.com",
+  projectId: "trade-track-pro-cd6a7",
+  storageBucket: "trade-track-pro-cd6a7.firebasestorage.app",
+  messagingSenderId: "791775076216",
+  appId: "1:791775076216:web:c79cefc9bae267bb4a328d"
+};
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // --- 2. MULTI-LANGUAGE DATA ---
         const i18n = {
-            en: { welcome: "Verify Account", notice_text: "This application is NOT for trading. It is strictly for personal journal entries and performance calculation. All decisions and risks are the user's responsibility. Nitai Studio is not liable for your trading losses.", total_inv: "Invested", net_pnl: "Net P/L", recent: "Journal Logs", date: "Date", session: "Session", logic: "Logic", symbol: "Symbol", rr: "R:R Ratio", outcome: "Result", bq: "Buy Cost", sq: "Sell Cost", mistake: "Notes", save: "Save Journal", win_rate: "Win Rate", avg_rr: "Avg RR" },
-            bn: { welcome: "অ্যাকাউন্ট ভেরিফাই", notice_text: "এই অ্যাপটি কোনো ট্রেডিং অ্যাপ নয়। এটি শুধুমাত্র আপনার ব্যক্তিগত ট্রেডের হিসাব রাখার জন্য। সকল ঝুঁকি এবং সিদ্ধান্তের দায়ভার আপনার নিজের। নিতাই স্টুডিও আপনার কোনো লসের জন্য দায়ী থাকবে না।", total_inv: "মোট বিনিয়োগ", net_pnl: "মোট লাভ/ক্ষতি", recent: "সাম্প্রতিক লগ", date: "তারিখ", session: "সেশন", logic: "লজিক", symbol: "সিম্বল", rr: "R:R রেশিও", outcome: "ফলাফল", bq: "ক্রয় মূল্য", sq: "বিক্রয় মূল্য", mistake: "নোটস", save: "সেভ করুন", win_rate: "উইন রেট", avg_rr: "গড় RR" },
-            hi: { welcome: "सत्यापित करें", notice_text: "यह ऐप ट्रेडिंग के लिए नहीं है। यह केवल आपके व्यक्तिगत ट्रेड रिकॉर्ड रखने के लिए है। सभी निर्णयों की जिम्मेदारी आपकी है। निताई स्टूडियो किसी भी नुकसान के लिए जिम्मेदार नहीं है।", total_inv: "कुल निवेश", net_pnl: "शुद्ध लाभ/हानि", recent: "हालिया रिकॉर्ड", date: "तिथि", session: "सत्र", logic: "लॉजिक", symbol: "सिंबल", rr: "R:R अनुपात", outcome: "परिणाम", bq: "खरीद मूल्य", sq: "विक्रय मूल्य", mistake: "टिप्पणी", save: "रिकॉर्ड सेव करें", win_rate: "जीत दर", avg_rr: "औसत RR" }
+            en: { notice: "This app is NOT for real trading. It is strictly for performance calculation and personal record. Nitai Studio is not liable for your losses.", today: "Today", weekly: "Weekly", monthly: "Monthly", win_rate: "Win Rate", avg_rr: "Avg RR", total_inv: "Total Invest", net_pnl: "Overall P/L", recent_head: "Recent Entries", save_btn: "Sync to Journal" },
+            bn: { notice: "এই অ্যাপটি ট্রেডিং এর জন্য নয়। এটি শুধুমাত্র আপনার ব্যক্তিগত ট্রেড হিসাব রাখার জন্য। কোনো প্রকার আর্থিক লসের জন্য নিতাই স্টুডিও দায়ী থাকবে না।", today: "আজকের", weekly: "সাপ্তাহিক", monthly: "মাসিক", win_rate: "উইন রেট", avg_rr: "গড় RR", total_inv: "মোট বিনিয়োগ", net_pnl: "সর্বমোট লাভ", recent_head: "সাম্প্রতিক লগ", save_btn: "জার্নালে সেভ করুন" },
+            hi: { notice: "यह ऐप केवल व्यक्तिगत जर्नल के लिए है। निर्णय आपकी अपनी जिम्मेदारी है। निताई स्टूडियो किसी भी नुकसान के लिए जिम्मेदार नहीं है।", today: "आज", weekly: "साप्ताहिक", monthly: "मासिक", win_rate: "जीत दर", avg_rr: "औसत RR", total_inv: "कुल निवेश", net_pnl: "कुल लाभ", recent_head: "हाल के रिकॉर्ड", save_btn: "सेव करें" }
         };
 
         const app = {
-            db: null, user: null, lang: 'en', pwa: null,
+            user: null, lang: 'en', trades: [], deferredPrompt: null,
             init: async function() {
-                this.lang = localStorage.getItem('nt_lang_v4') || 'en';
+                this.lang = localStorage.getItem('nt_lang_v7') || 'en';
                 document.getElementById('app-lang').value = this.lang;
                 this.updateLanguage();
-                await this.initDB();
-                
-                // Final Splash Timer and State Check
+                this.setupPWA();
+
                 setTimeout(() => {
                     document.getElementById('splash').style.opacity = '0';
                     setTimeout(() => {
@@ -348,56 +354,49 @@
                         this.checkAuth();
                     }, 600);
                 }, 2500);
-
-                window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.pwa = e; });
-                document.getElementById('pwa-install-btn').onclick = () => { if(this.pwa) this.pwa.prompt(); };
             },
-            initDB: function() {
-                return new Promise(res => {
-                    const req = indexedDB.open("NitaiStudioJournalV4", 1);
-                    req.onupgradeneeded = e => e.target.result.createObjectStore("trades", { keyPath: "id", autoIncrement: true });
-                    req.onsuccess = e => { this.db = e.target.result; res(); };
-                });
+            setupPWA: function() {
+                window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.deferredPrompt = e; });
+            },
+            installPWA: function() {
+                if(this.deferredPrompt) { this.deferredPrompt.prompt(); this.deferredPrompt = null; }
+                else alert("App is already installed or browser not supported.");
             },
             checkAuth: function() {
-                const u = localStorage.getItem('nt_user_v4');
-                const n = localStorage.getItem('nt_notice_v4');
-                if(!u) {
-                    document.getElementById('login-overlay').classList.remove('hidden');
-                } else if(!n) {
-                    this.user = u;
-                    document.getElementById('notice-overlay').classList.remove('hidden');
-                } else {
-                    this.user = u;
-                    this.startApp();
-                }
+                const u = localStorage.getItem('nt_user_v7');
+                const n = localStorage.getItem('nt_notice_v7');
+                if(!u) document.getElementById('login-overlay').classList.remove('hidden');
+                else if(!n) { this.user = u; document.getElementById('notice-overlay').classList.remove('hidden'); }
+                else { this.user = u; this.startApp(); }
             },
             updateLanguage: function() {
                 this.lang = document.getElementById('app-lang').value;
-                localStorage.setItem('nt_lang_v4', this.lang);
+                localStorage.setItem('nt_lang_v7', this.lang);
                 const t = i18n[this.lang];
-                document.getElementById('l-notice-text').innerText = t.notice_text;
-                ["win-rate","avg-rr","total-inv","net-pnl","recent-head","date","session","logic","symbol","rr","outcome","bq","sq","mistake","save-btn"].forEach(k => {
-                    const el = document.getElementById('l-'+k); if(el) el.innerText = t[k.replace('-','_')] || k;
+                document.getElementById('l-notice-text').innerText = t.notice;
+                ["today","weekly","monthly","win-rate","avg-rr","total-inv","net-pnl","recent-head","save-btn"].forEach(k => {
+                    const el = document.getElementById('l-'+k); if(el) el.innerText = t[k.replace('-','_')];
                 });
             },
             doLogin: function() {
+                const c = document.getElementById('user-country').value;
                 const p = document.getElementById('user-mobile').value.trim();
-                if(p.length < 5) return alert("Valid Number Required!");
-                localStorage.setItem('nt_user_v4', p);
-                this.user = p;
+                if(p.length !== 10) return alert("Enter 10-digit number");
+                const fullId = c + p;
+                localStorage.setItem('nt_user_v7', fullId);
+                this.user = fullId;
                 document.getElementById('login-overlay').classList.add('hidden');
                 this.checkAuth();
             },
             acceptNotice: function() {
-                localStorage.setItem('nt_notice_v4', 'true');
+                localStorage.setItem('nt_notice_v7', 'true');
                 document.getElementById('notice-overlay').classList.add('hidden');
                 this.startApp();
             },
             startApp: function() {
                 document.getElementById('main-content').style.display = 'block';
                 document.getElementById('navbar').style.display = 'flex';
-                document.getElementById('user-id-tag').innerText = "Nitai Studio Account: " + this.user;
+                document.getElementById('user-id-tag').innerText = "Nitai Cloud Active: " + this.user;
                 this.navigate('dash');
             },
             navigate: function(id) {
@@ -406,14 +405,20 @@
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 const map = {dash:0, history:1, add:2, info:3};
                 document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
-                if(id === 'dash' || id === 'history') this.loadData();
-                document.getElementById('main-content').scrollTop = 0;
+                this.fetchData();
+            },
+            fetchData: function() {
+                db.ref('nt_users_v7/' + this.user + '/trades').on('value', (snap) => {
+                    const data = snap.val();
+                    this.trades = data ? Object.values(data).sort((a,b) => b.ts - a.ts) : [];
+                    this.render();
+                });
             },
             saveEntry: function() {
                 const sym = document.getElementById('t-symbol').value.toUpperCase().trim();
-                if(!sym) return alert("Enter Asset Symbol!");
+                if(!sym) return alert("Asset Name Required!");
                 const entry = {
-                    uid: this.user, date: document.getElementById('t-date').value || new Date().toISOString().split('T')[0],
+                    date: document.getElementById('t-date').value || new Date().toISOString().split('T')[0],
                     sym: sym, session: document.getElementById('t-session').value,
                     logic: document.getElementById('t-logic').value,
                     rr: parseFloat(document.getElementById('t-rr').value) || 0,
@@ -422,62 +427,62 @@
                     sq: parseFloat(document.getElementById('t-sq').value) || 0,
                     mistake: document.getElementById('t-mistake').value, ts: Date.now()
                 };
-                const tx = this.db.transaction("trades", "readwrite");
-                tx.objectStore("trades").add(entry);
-                tx.oncomplete = () => { alert("Saved to Nitai Studio Journal!"); this.navigate('dash'); };
+                db.ref('nt_users_v7/' + this.user + '/trades').push(entry).then(() => {
+                    alert("Synced Successfully!"); this.navigate('dash');
+                });
             },
-            loadData: function() {
-                const tx = this.db.transaction("trades", "readonly");
-                const req = tx.objectStore("trades").getAll();
-                req.onsuccess = () => {
-                    const data = req.result.filter(t => t.uid === this.user).sort((a,b) => b.ts - a.ts);
-                    this.render(data);
+            render: function() {
+                const now = new Date();
+                const todayStr = now.toISOString().split('T')[0];
+                const weekStart = new Date(now.setDate(now.getDate() - now.getDay())).toISOString().split('T')[0];
+                const monthStart = todayStr.substring(0, 7) + "-01";
+
+                let dayPnl = 0, weekPnl = 0, monthPnl = 0, totalPnl = 0, totalInv = 0, totalRR = 0;
+                this.trades.forEach(t => {
+                    const pnl = t.sq - t.bq;
+                    totalPnl += pnl; totalInv += t.bq; totalRR += t.rr;
+                    if(t.date === todayStr) dayPnl += pnl;
+                    if(t.date >= weekStart) weekPnl += pnl;
+                    if(t.date >= monthStart) monthPnl += pnl;
+                });
+
+                const wins = this.trades.filter(t => t.outcome === 'Win').length;
+                const total = this.trades.length;
+
+                const colorEl = (val, id) => {
+                    const el = document.getElementById(id);
+                    el.innerText = (val>=0?'+':'') + "₹" + val.toLocaleString();
+                    el.style.color = val>=0?'var(--success)':'var(--error)';
                 };
-            },
-            render: function(data) {
-                const total = data.length;
-                const wins = data.filter(t => t.outcome === 'Win').length;
-                const totalInv = data.reduce((s, t) => s + t.bq, 0);
-                const totalPnl = data.reduce((s, t) => s + (t.sq - t.bq), 0);
-                const avgRR = total ? (data.reduce((s, t) => s + t.rr, 0) / total).toFixed(2) : "0.00";
 
-                document.getElementById('d-win').innerText = total ? ((wins/total)*100).toFixed(0) + '%' : '0%';
-                document.getElementById('d-rr').innerText = avgRR;
+                colorEl(dayPnl, 'd-today'); colorEl(weekPnl, 'd-weekly'); colorEl(monthPnl, 'd-monthly');
+                colorEl(totalPnl, 'd-pnl');
                 document.getElementById('d-inv').innerText = "₹" + totalInv.toLocaleString();
-                const pnlEl = document.getElementById('d-pnl');
-                pnlEl.innerText = (totalPnl >= 0 ? '+' : '') + "₹" + totalPnl.toLocaleString();
-                pnlEl.style.color = totalPnl >= 0 ? 'var(--success)' : 'var(--error)';
+                document.getElementById('d-win').innerText = total ? ((wins/total)*100).toFixed(0) + "%" : "0%";
+                document.getElementById('d-rr').innerText = total ? (totalRR/total).toFixed(2) : "0.00";
 
-                const itemHTML = (t) => `
-                    <div class="log-item" style="border-left-color: ${t.outcome === 'Win' ? 'var(--success)' : 'var(--error)'}">
-                        <div style="display:flex; justify-content:space-between; align-items:start;">
-                            <div>
-                                <div style="font-weight:800; font-size:16px;">${t.sym} <small style="color:var(--primary)">(${t.session})</small></div>
-                                <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">${t.date} • ${t.logic}</div>
-                            </div>
+                const logHTML = (t) => `
+                    <div class="journal-log" style="border-left-color:${t.outcome === 'Win'?'var(--success)':'var(--error)'}">
+                        <div style="display:flex; justify-content:space-between;">
+                            <div><b>${t.sym}</b><br><small style="color:var(--text-dim)">${t.date} • ${t.logic}</small></div>
                             <div style="text-align:right">
-                                <div style="font-weight:800; color:${t.sq-t.bq >= 0 ? 'var(--success)' : 'var(--error)'}">${t.sq-t.bq >= 0 ? '+' : ''}${(t.sq-t.bq).toFixed(2)}</div>
-                                <div style="font-size:10px; color:var(--text-dim)">RR: ${t.rr}</div>
+                                <b style="color:${t.sq-t.bq>=0?'var(--success)':'var(--error)'}">${(t.sq-t.bq).toFixed(2)}</b><br>
+                                <small style="color:var(--text-dim)">RR ${t.rr}</small>
                             </div>
                         </div>
-                        ${t.mistake ? `<div style="margin-top:10px; font-size:11px; color:var(--text-dim); background:#000; padding:10px; border-radius:15px; border: 1px solid var(--border)">📝 ${t.mistake}</div>` : ''}
                     </div>`;
-
-                document.getElementById('list-recent').innerHTML = data.slice(0, 5).map(itemHTML).join('');
-                document.getElementById('list-history').innerHTML = data.map(itemHTML).join('');
+                document.getElementById('list-recent').innerHTML = this.trades.slice(0,5).map(logHTML).join('');
+                document.getElementById('list-history').innerHTML = this.trades.map(logHTML).join('');
             },
-            logout: function() {
-                if(confirm("Logout? All data will stay safe on your device locally.")){ localStorage.clear(); window.location.reload(); }
-            }
+            logout: function() { if(confirm("Logout? Data stays safe in Cloud.")){ localStorage.clear(); window.location.reload(); } }
         };
 
         window.onload = () => { app.init(); document.getElementById('t-date').valueAsDate = new Date(); };
 
-        // PWA Implementation
-        if ('serviceWorker' in navigator) {
-            const swCode = `self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
-            navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'})));
-        }
+        // --- PWA MANIFEST & SW ---
+        const manifest = { "name": "TradeTrack Pro", "short_name": "T-Track", "start_url": ".", "display": "standalone", "background_color": "#000000", "theme_color": "#000000", "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/2422/2422796.png", "sizes": "512x512", "type": "image/png" }] };
+        const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'}); document.getElementById('pwa-manifest').href = URL.createObjectURL(mBlob);
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register(URL.createObjectURL(new Blob([`self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))))`], {type:'application/javascript'}))); }
     </script>
 </body>
 </html>
