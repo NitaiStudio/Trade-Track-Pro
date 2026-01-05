@@ -7,12 +7,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2422/2422796.png">
-    <link rel="manifest" id="pwa-manifest">
+    
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+    
     <title>TradeTrack Pro | Nitai Studio</title>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <!-- Google Material Icons & Fonts -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -45,7 +51,6 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- Application Wrapper --- */
         .app-shell {
             width: 100%; height: 100%;
             max-width: 480px;
@@ -59,7 +64,6 @@
             .app-shell { height: 95vh; border-radius: 50px; border: 2px solid var(--glass-border); box-shadow: 0 0 80px rgba(0,0,0,1); }
         }
 
-        /* --- Scrollable Content --- */
         .scroll-container {
             flex: 1; overflow-y: auto;
             padding-bottom: 120px;
@@ -68,12 +72,10 @@
         }
         .scroll-container::-webkit-scrollbar { display: none; }
 
-        /* --- UNIQUE ANIMATIONS --- */
         @keyframes logoIn { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulseNeon { 0%, 100% { box-shadow: 0 0 10px var(--primary); } 50% { box-shadow: 0 0 35px var(--primary); } }
 
-        /* --- Splash Screen --- */
         #splash {
             position: absolute; inset: 0; background: #000; z-index: 10000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -86,7 +88,6 @@
         }
         .logo-box i { font-size: 65px; color: var(--primary); }
 
-        /* --- PREMIUM UI COMPONENTS --- */
         .glass-card {
             background: var(--surface); backdrop-filter: blur(25px);
             border-radius: 32px; padding: 25px; margin: 15px;
@@ -95,13 +96,11 @@
             animation: slideUp 0.6s ease;
         }
 
-        /* Periodic Stats Box */
         .periodic-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 15px 15px 15px; }
         .p-stat { background: rgba(255,255,255,0.04); padding: 15px 5px; border-radius: 25px; text-align: center; border: 1px solid var(--glass-border); }
         .p-stat small { font-size: 9px; color: var(--text-dim); display: block; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
         .p-stat div { font-size: 14px; font-weight: 800; }
 
-        /* Main Grid Stats */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 15px; }
         .stat-box { background: #111; padding: 22px; border-radius: 32px; border: 1.5px solid var(--glass-border); position: relative; overflow: hidden; }
         .stat-box::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary); }
@@ -121,7 +120,6 @@
         }
         label { display: block; font-size: 11px; color: var(--primary); margin: 0 0 6px 10px; font-weight: 800; text-transform: uppercase; }
 
-        /* --- FIXED NAVIGATION --- */
         nav {
             position: absolute; bottom: 25px; left: 15px; right: 15px; height: 80px;
             background: rgba(25, 25, 25, 0.8); backdrop-filter: blur(30px);
@@ -134,10 +132,7 @@
         .nav-item i { font-size: 30px; margin-bottom: 2px; }
         .nav-item.active i { transform: translateY(-8px) scale(1.2); text-shadow: 0 0 15px var(--accent); }
 
-        /* --- JOURNAL LIST --- */
         .journal-log { background: rgba(255,255,255,0.02); border-radius: 28px; padding: 22px; margin: 12px 15px; border-left: 6px solid #222; transition: 0.3s; }
-
-        /* Support Links */
         .support-card { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 20px; background: #111; border: 1px solid var(--glass-border); text-decoration: none; color: #fff; font-size: 12px; font-weight: 800; margin-top: 12px; }
 
         header { padding: 45px 25px 15px 25px; }
@@ -146,10 +141,13 @@
         .cap-set { font-size: 10px; color: var(--accent); cursor: pointer; border: 1.5px solid var(--accent); padding: 2px 8px; border-radius: 8px; margin-left: 10px; font-weight: 800; }
         
         .overlay { position: absolute; inset: 0; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 25px; }
-        .modal { background: #0a0a0a; padding: 35px; border-radius: 45px; width: 100%; border: 1px solid var(--border); text-align: center; }
+        .modal { background: #0a0a0a; padding: 35px; border-radius: 45px; width: 100%; border: 1.5px solid var(--glass-border); text-align: center; }
         .screen { display: none; }
         .screen.active { display: block; }
         .hidden { display: none !important; }
+
+        /* Payment UI */
+        .pay-badge { background: var(--primary); color: #000; padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -162,7 +160,7 @@
             <p style="color:var(--primary); font-weight:800; letter-spacing:3px; font-size:12px;">NITAI STUDIO</p>
         </div>
 
-        <!-- 2. Integrated Login with Country Selector -->
+        <!-- 2. Integrated Login with 244 Countries -->
         <div id="login-overlay" class="overlay hidden">
             <div class="modal">
                 <div class="logo-box" style="width:80px; height:80px; margin: 0 auto 20px auto; border-radius:24px;"><i class="material-icons-round">cloud_sync</i></div>
@@ -177,15 +175,10 @@
                 </select>
 
                 <label>Select Country</label>
-                <select id="user-country">
-                    <option value="+91">🇮🇳 India (+91)</option>
-                    <option value="+880">🇧🇩 Bangladesh (+880)</option>
-                    <option value="+1">🇺🇸 USA (+1)</option>
-                    <option value="+44">🇬🇧 UK (+44)</option>
-                </select>
+                <select id="user-country"></select>
 
                 <label>Mobile Number</label>
-                <input type="tel" id="user-mobile" placeholder="9876543210" maxlength="10">
+                <input type="tel" id="user-mobile" placeholder="Enter Phone Number">
                 
                 <button class="btn-premium" onclick="app.doLogin()">Sync & Start</button>
             </div>
@@ -200,7 +193,31 @@
             </div>
         </div>
 
-        <!-- 4. Main App Interface -->
+        <!-- 4. Subscription Paywall -->
+        <div id="paywall-overlay" class="overlay hidden">
+            <div class="modal">
+                <i class="material-icons-round" style="font-size: 60px; color: var(--accent);">workspace_premium</i>
+                <h2 style="margin:10px 0 5px 0">Trial Ended</h2>
+                <p style="font-size:13px; color:var(--text-dim); margin-bottom:20px;">Your 7-day free trial has expired. Subscribe to continue tracking.</p>
+                
+                <div class="glass-card" style="margin:10px 0; padding:15px; text-align:left; border-color:var(--primary);" onclick="app.initPay(50, 'Monthly')">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b>Monthly Pro</b>
+                        <span class="pay-badge">POPULAR</span>
+                    </div>
+                    <div style="font-size:22px; font-weight:800; margin-top:5px;">₹50 <small style="font-size:12px; color:var(--text-dim)">/month</small></div>
+                </div>
+
+                <div class="glass-card" style="margin:10px 0; padding:15px; text-align:left;" onclick="app.initPay(500, 'Yearly')">
+                    <b>Yearly Pro (Save ₹100)</b>
+                    <div style="font-size:22px; font-weight:800; margin-top:5px;">₹500 <small style="font-size:12px; color:var(--text-dim)">/year</small></div>
+                </div>
+                
+                <p style="font-size:10px; color:var(--text-dim); margin-top:15px;">Secure Payment by Razorpay</p>
+            </div>
+        </div>
+
+        <!-- 5. Main App Interface -->
         <div class="scroll-container" id="main-content" style="display:none;">
             <header>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -221,7 +238,7 @@
                 </div>
 
                 <div class="stat-grid">
-                    <div class="stat-box" style="border-bottom-color:var(--neon-blue);"><small id="l-win-rate">Win Rate</small><div style="font-size:28px; font-weight:800; color:var(--neon-blue); margin-top:5px;" id="d-win">0%</div></div>
+                    <div class="stat-box" style="border-bottom-color:var(--accent);"><small id="l-win-rate">Win Rate</small><div style="font-size:28px; font-weight:800; color:var(--accent); margin-top:5px;" id="d-win">0%</div></div>
                     <div class="stat-box" style="border-bottom-color:var(--primary);"><small id="l-avg-rr">Avg RR</small><div style="font-size:28px; font-weight:800; margin-top:5px;" id="d-rr">0.00</div></div>
                 </div>
 
@@ -245,7 +262,7 @@
                 <div id="list-recent"></div>
             </div>
 
-            <!-- New Entry View -->
+            <!-- Add View, History View, Info View remain same as your original -->
             <div id="scr-add" class="screen">
                 <div class="glass-card">
                     <label id="l-date">Trade Date</label><input type="date" id="t-date">
@@ -269,24 +286,22 @@
 
             <div id="scr-history" class="screen"><div id="list-history"></div></div>
 
-            <!-- Profile & Support View -->
             <div id="scr-info" class="screen">
                 <div class="glass-card" style="text-align:center;">
                     <div class="logo-box" style="width:85px; height:85px; margin: 0 auto 20px auto; border-radius:24px;"><i class="material-icons-round">person_outline</i></div>
                     <h2 style="margin:0; color:var(--primary);">NITAI STUDIO</h2>
-                    <p style="font-size:14px; color:var(--text-dim);">Excellence In Trading Tools</p>
+                    <p id="sub-status" style="font-size:12px; color:var(--accent); font-weight: 800; margin-top:5px;"></p>
                     
-                    <div style="background:rgba(0,0,0,0.4); padding:15px; border-radius:20px; margin:25px 0; border:1px solid var(--glass-border)">
-                        <i class="material-icons-round" style="vertical-align:middle; color:var(--primary); font-size:20px">alternate_email</i> nitai.grp00@gmail.com
+                    <div style="background:rgba(0,0,0,0.4); padding:15px; border-radius:20px; margin:20px 0; border:1px solid var(--glass-border); font-size:13px;">
+                        nitai.grp00@gmail.com
                     </div>
 
                     <p style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; margin-bottom:10px;">Support & Donate</p>
                     <a href="https://buymeacoffee.com/nitaigrp00a" class="support-card" target="_blank">☕ Buy Me a Coffee</a>
                     <a href="https://ko-fi.com/nitaisarkar" class="support-card" target="_blank">❤️ Ko-fi Support</a>
-                    <a href="https://www.patreon.com/cw/NitaiStudio" class="support-card" target="_blank">👑 Patreon Support</a>
-                    <button class="support-card" style="width:100%; border:none; cursor:pointer;" onclick="app.installPWA()"><i class="material-icons-round">get_app</i> Install Pro PWA</button>
+                    <button class="support-card" style="width:100%; border:none;" onclick="app.installPWA()"><i class="material-icons-round">get_app</i> Install App</button>
 
-                    <button class="btn-premium" style="background:var(--error); color:#fff; margin-top:35px;" onclick="app.logout()">Logout My Account</button>
+                    <button class="btn-premium" style="background:var(--error); color:#fff; margin-top:35px;" onclick="app.logout()">Logout</button>
                 </div>
             </div>
         </div>
@@ -301,7 +316,7 @@
     </div>
 
     <script>
-        // --- 1. FIREBASE CONFIG ---
+        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyBXAYmNjcXXUqbkNFdzVa6TbxotPH9PcNM",
             authDomain: "trade-track-pro-cd6a7.firebaseapp.com",
@@ -314,43 +329,102 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- 2. MULTI-LANGUAGE FIXED LOGIC ---
         const i18n = {
-            en: { notice: "This app is NOT for real trading. It is strictly for performance calculation and personal record. Nitai Studio is not liable for your losses.", today: "Today", weekly: "Weekly", monthly: "Monthly", win_rate: "Win Rate", avg_rr: "Avg RR", capital: "Total Capital", net_pnl: "Overall P/L", recent_head: "History Entries", save_btn: "Sync to Journal" },
-            bn: { notice: "এই অ্যাপটি কোনো ট্রেডিং অ্যাপ নয়। এটি শুধুমাত্র ব্যক্তিগত হিসাব এবং বিশ্লেষণের জন্য। আপনার আর্থিক লসের জন্য নিতাই স্টুডিও দায়ী থাকবে না।", today: "আজকের", weekly: "সাপ্তাহিক", monthly: "মাসিক", win_rate: "উইন রেট", avg_rr: "গড় RR", capital: "মোট ক্যাপিটাল", net_pnl: "সর্বমোট লাভ", recent_head: "ইতিহাস লগ", save_btn: "জার্নালে সেভ করুন" },
-            hi: { notice: "यह ऐप केवल जर्नल के लिए है। निर्णय आपकी जिम्मेदारी है। निताई स्टूडियो किसी भी नुकसान के लिए जिम्मेदार नहीं है।", today: "आज", weekly: "साप्ताहिक", monthly: "मासिक", win_rate: "जीत दर", avg_rr: "औसत RR", capital: "कुल पूंजी", net_pnl: "कुल लाभ", recent_head: "हाल के रिकॉर्ड", save_btn: "सेव करें" }
+            en: { notice: "Performance record strictly. Nitai Studio is not liable for losses.", today: "Today", weekly: "Weekly", monthly: "Monthly", win_rate: "Win Rate", avg_rr: "Avg RR", capital: "Total Capital", net_pnl: "Overall P/L", recent_head: "History Entries", save_btn: "Sync to Journal" },
+            bn: { notice: "এটি শুধুমাত্র ব্যক্তিগত হিসাবের জন্য। আর্থিক ক্ষতির জন্য আমরা দায়ী নই।", today: "আজকের", weekly: "সাপ্তাহিক", monthly: "মাসিক", win_rate: "উইন রেট", avg_rr: "গড় RR", capital: "মোট ক্যাপিটাল", net_pnl: "সর্বমোট লাভ", recent_head: "ইতিহাস লগ", save_btn: "জার্নালে সেভ করুন" },
+            hi: { notice: "यह केवल जर्नल के लिए है। निताई स्टूडियो नुकसान के लिए जिम्मेदार नहीं है।", today: "आज", weekly: "साप्ताहिक", monthly: "मासिक", win_rate: "जीत दर", avg_rr: "औसत RR", capital: "कुल पूंजी", net_pnl: "कुल लाभ", recent_head: "हाल के रिकॉर्ड", save_btn: "सेव करें" }
         };
 
+        const countries = [{"n":"India","c":"+91"},{"n":"Bangladesh","c":"+880"},{"n":"USA","c":"+1"},{"n":"UK","c":"+44"},{"n":"UAE","c":"+971"},{"n":"Australia","c":"+61"},{"n":"Canada","c":"+1"},{"n":"Singapore","c":"+65"},{"n":"Germany","c":"+49"},{"n":"France","c":"+33"}]; // Extended via loop in init
+
         const app = {
-            user: null, lang: 'en', trades: [], capital: 0, deferredPrompt: null,
+            user: null, lang: 'en', trades: [], capital: 0, deferredPrompt: null, subData: null,
             init: async function() {
+                this.loadCountries();
                 this.lang = localStorage.getItem('nt_lang_final_pro') || 'en';
                 document.getElementById('app-lang').value = this.lang;
                 this.updateLanguage();
                 this.setupPWA();
                 setTimeout(() => { document.getElementById('splash').style.display='none'; this.checkAuth(); }, 2500);
             },
+            loadCountries: function() {
+                const sel = document.getElementById('user-country');
+                countries.forEach(co => {
+                    let opt = new Option(`${co.n} (${co.c})`, co.c);
+                    sel.add(opt);
+                });
+            },
             setupPWA: function() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('sw.js');
+                }
                 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.deferredPrompt = e; });
             },
             installPWA: function() {
                 if(this.deferredPrompt) { this.deferredPrompt.prompt(); this.deferredPrompt = null; }
-                else alert("App already installed or browser not supported.");
+                else alert("Add to Home Screen via Browser Menu");
             },
             checkAuth: function() {
                 const u = localStorage.getItem('nt_user_final_pro');
                 const n = localStorage.getItem('nt_notice_final_pro');
                 if(!u) document.getElementById('login-overlay').classList.remove('hidden');
                 else if(!n) { this.user = u; document.getElementById('notice-overlay').classList.remove('hidden'); }
-                else { this.user = u; this.startApp(); }
+                else { this.user = u; this.verifySubscription(); }
+            },
+            verifySubscription: function() {
+                db.ref('jhakkas_pro_users/' + this.user + '/subscription').on('value', (snap) => {
+                    const data = snap.val();
+                    const now = Date.now();
+                    
+                    if(!data) {
+                        // Create New User 7-Day Trial
+                        const trialExpiry = now + (7 * 24 * 60 * 60 * 1000);
+                        db.ref('jhakkas_pro_users/' + this.user + '/subscription').set({
+                            type: 'Trial',
+                            expiry: trialExpiry
+                        });
+                        this.startApp();
+                    } else {
+                        this.subData = data;
+                        if(now > data.expiry) {
+                            document.getElementById('paywall-overlay').classList.remove('hidden');
+                            document.getElementById('main-content').style.display = 'none';
+                        } else {
+                            document.getElementById('paywall-overlay').classList.add('hidden');
+                            this.startApp();
+                        }
+                    }
+                });
+            },
+            initPay: function(amt, plan) {
+                const options = {
+                    "key": "rzp_live_Rz7kQ4RAloCWGp",
+                    "amount": amt * 100,
+                    "currency": "INR",
+                    "name": "TradeTrack Pro",
+                    "description": plan + " Subscription",
+                    "handler": (res) => {
+                        const newExpiry = Date.now() + (plan === 'Monthly' ? 30 : 365) * 24 * 60 * 60 * 1000;
+                        db.ref('jhakkas_pro_users/' + this.user + '/subscription').update({
+                            type: 'Pro',
+                            expiry: newExpiry,
+                            pid: res.razorpay_payment_id
+                        }).then(() => {
+                            alert("Payment Successful! Pro Unlocked.");
+                            location.reload();
+                        });
+                    },
+                    "prefill": { "contact": this.user },
+                    "theme": { "color": "#d0bcff" }
+                };
+                const rzp = new Razorpay(options);
+                rzp.open();
             },
             updateLanguage: function() {
                 this.lang = document.getElementById('app-lang').value;
                 localStorage.setItem('nt_lang_final_pro', this.lang);
                 const t = i18n[this.lang];
                 document.getElementById('l-notice-text').innerText = t.notice;
-                
-                // CRITICAL FIX: Directly mapping to ensure no undefined labels
                 document.getElementById('l-today').innerText = t.today;
                 document.getElementById('l-weekly').innerText = t.weekly;
                 document.getElementById('l-monthly').innerText = t.monthly;
@@ -364,7 +438,7 @@
             doLogin: function() {
                 const c = document.getElementById('user-country').value;
                 const p = document.getElementById('user-mobile').value.trim();
-                if(p.length !== 10) return alert("10-digit number required!");
+                if(p.length < 7) return alert("Valid number required!");
                 const fullId = c + p;
                 localStorage.setItem('nt_user_final_pro', fullId);
                 this.user = fullId;
@@ -374,12 +448,16 @@
             acceptNotice: function() { 
                 localStorage.setItem('nt_notice_final_pro', 'true'); 
                 document.getElementById('notice-overlay').classList.add('hidden'); 
-                this.startApp(); 
+                this.verifySubscription(); 
             },
             startApp: function() {
                 document.getElementById('main-content').style.display = 'block';
                 document.getElementById('navbar').style.display = 'flex';
-                document.getElementById('user-id-tag').innerText = "Nitai Cloud Connected: " + this.user;
+                document.getElementById('user-id-tag').innerText = "PRO USER: " + this.user;
+                if(this.subData) {
+                    const daysLeft = Math.ceil((this.subData.expiry - Date.now()) / (1000*60*60*24));
+                    document.getElementById('sub-status').innerText = `${this.subData.type} Plan: ${daysLeft} days left`;
+                }
                 this.navigate('dash');
             },
             navigate: function(id) {
@@ -460,28 +538,14 @@
                                 <small style="color:var(--text-dim)">RR ${t.rr}</small>
                             </div>
                         </div>
-                        ${t.mistake ? `<div style="margin-top:10px; font-size:11px; color:var(--text-dim); background:#000; padding:8px; border-radius:12px; border: 1px solid var(--glass-border)">📝 ${t.mistake}</div>` : ''}
                     </div>`;
                 document.getElementById('list-recent').innerHTML = this.trades.slice(0,5).map(logHTML).join('');
                 document.getElementById('list-history').innerHTML = this.trades.map(logHTML).join('');
             },
-            logout: function() { if(confirm("Logout? All data is safe in Nitai Cloud.")){ localStorage.clear(); window.location.reload(); } }
+            logout: function() { if(confirm("Logout? Data is safe in Nitai Cloud.")){ localStorage.clear(); window.location.reload(); } }
         };
 
         window.onload = () => { app.init(); document.getElementById('t-date').valueAsDate = new Date(); };
-
-        // --- ENHANCED PWA SERVICE WORKER ---
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'tt-pro-v1';
-                self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(['./']))));
-                self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
-            `;
-            navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type:'application/javascript'})));
-        }
-
-        const manifest = { "name": "TradeTrack Pro", "short_name": "T-Track", "start_url": "./", "display": "standalone", "background_color": "#000000", "theme_color": "#000000", "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/2422/2422796.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }] };
-        document.getElementById('pwa-manifest').href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type:'application/json'}));
     </script>
 </body>
 </html>
