@@ -1,17 +1,28 @@
 {
   "name": "TradeTrack Pro",
   "short_name": "T-Track",
-  "description": "Professional Trading Journal & Performance Analytics Tool. Track your trades, Win Rate, and P/L with Nitai Cloud Sync. Made by Nitai Studio.",
-  "start_url": "index.html",
+  "description": "Professional Trading Journal & Performance Analytics Tool. Track your trades, Win Rate, and P/L with Nitai Cloud Sync. Developed by Nitai Studio for global traders.",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#0a0a0a",
+  "theme_color": "#d0bcff",
+  "orientation": "portrait",
+  "lang": "en-US",
+  "scope": "./",
+  "id": "com.nitaistudio.tradetrackpro",
+  "categories": ["finance", "business", "productivity"],
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2422/2422796.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2422/2422796.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
