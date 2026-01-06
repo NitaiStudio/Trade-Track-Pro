@@ -298,7 +298,7 @@
 
                     <p style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; margin-bottom:10px;">Support & Donate</p>
                     <a href="https://buymeacoffee.com/nitaigrp00a" class="support-card" target="_blank">☕ Buy Me a Coffee</a>
-                    <a href="https://ko-fi.com/nitaisarkar" class="support-card" target="_blank">❤️ Ko-fi Support</a>
+                       <a href="https://nitaistudio.github.io/Trade-Track-Pro/policies.html" class="support-card" target="_blank">Policies</a>
                     <button class="support-card" style="width:100%; border:none;" onclick="app.installPWA()"><i class="material-icons-round">get_app</i> Install App</button>
 
                     <button class="btn-premium" style="background:var(--error); color:#fff; margin-top:35px;" onclick="app.logout()">Logout</button>
@@ -330,9 +330,15 @@
         const db = firebase.database();
 
         const i18n = {
-            en: { notice: "Performance record strictly. Nitai Studio is not liable for losses.", today: "Today", weekly: "Weekly", monthly: "Monthly", win_rate: "Win Rate", avg_rr: "Avg RR", capital: "Total Capital", net_pnl: "Overall P/L", recent_head: "History Entries", save_btn: "Sync to Journal" },
-            bn: { notice: "এটি শুধুমাত্র ব্যক্তিগত হিসাবের জন্য। আর্থিক ক্ষতির জন্য আমরা দায়ী নই।", today: "আজকের", weekly: "সাপ্তাহিক", monthly: "মাসিক", win_rate: "উইন রেট", avg_rr: "গড় RR", capital: "মোট ক্যাপিটাল", net_pnl: "সর্বমোট লাভ", recent_head: "ইতিহাস লগ", save_btn: "জার্নালে সেভ করুন" },
-            hi: { notice: "यह केवल जर्नल के लिए है। निताई स्टूडियो नुकसान के लिए जिम्मेदार नहीं है।", today: "आज", weekly: "साप्ताहिक", monthly: "मासिक", win_rate: "जीत दर", avg_rr: "औसत RR", capital: "कुल पूंजी", net_pnl: "कुल लाभ", recent_head: "हाल के रिकॉर्ड", save_btn: "सेव करें" }
+            en: { notice: "Trade Track Pro is not a financial advisor and does not provide investment or trading advice.
+This app is intended only for trade tracking and record-keeping purposes.
+All trading decisions and financial risks are solely the responsibility of the user.", today: "Today", weekly: "Weekly", monthly: "Monthly", win_rate: "Win Rate", avg_rr: "Avg RR", capital: "Total Capital", net_pnl: "Overall P/L", recent_head: "History Entries", save_btn: "Sync to Journal" },
+            bn: { notice: "Trade Track Pro কোনো আর্থিক পরামর্শদাতা নয় এবং বিনিয়োগ বা ট্রেডিং পরামর্শ দেয় না।
+এই অ্যাপটি শুধুমাত্র ট্রেড ট্র্যাকিং ও রেকর্ড রাখার জন্য ব্যবহৃত হয়।
+সব ধরনের ট্রেডিং সিদ্ধান্ত ও আর্থিক ঝুঁকি সম্পূর্ণভাবে ব্যবহারকারীর দায়িত্ব।", today: "আজকের", weekly: "সাপ্তাহিক", monthly: "মাসিক", win_rate: "উইন রেট", avg_rr: "গড় RR", capital: "মোট ক্যাপিটাল", net_pnl: "সর্বমোট লাভ", recent_head: "ইতিহাস লগ", save_btn: "জার্নালে সেভ করুন" },
+            hi: { notice: "Trade Track Pro कोई वित्तीय सलाहकार नहीं है और निवेश या ट्रेडिंग सलाह प्रदान नहीं करता।
+यह ऐप केवल ट्रेड ट्रैकिंग और रिकॉर्ड रखने के लिए है।
+सभी ट्रेडिंग निर्णय और वित्तीय जोखिम पूरी तरह उपयोगकर्ता की जिम्मेदारी हैं।", today: "आज", weekly: "साप्ताहिक", monthly: "मासिक", win_rate: "जीत दर", avg_rr: "औसत RR", capital: "कुल पूंजी", net_pnl: "कुल लाभ", recent_head: "हाल के रिकॉर्ड", save_btn: "सेव करें" }
         };
 
         const countries = [{"n":"India","c":"+91"},{"n":"Bangladesh","c":"+880"},{"n":"USA","c":"+1"},{"n":"UK","c":"+44"},{"n":"UAE","c":"+971"},{"n":"Australia","c":"+61"},{"n":"Canada","c":"+1"},{"n":"Singapore","c":"+65"},{"n":"Germany","c":"+49"},{"n":"France","c":"+33"}]; // Extended via loop in init
