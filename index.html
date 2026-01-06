@@ -8,19 +8,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2422/2422796.png">
     
-    <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
     
     <title>TradeTrack Pro | Nitai Studio</title>
 
-    <!-- Firebase SDK -->
+    <!-- SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    
-    <!-- Razorpay SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-    <!-- Google Material Icons & Fonts -->
+    <!-- UI Resources -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -36,7 +33,6 @@
             --text: #ffffff;
             --text-dim: #999999;
             --glass-border: rgba(255, 255, 255, 0.15);
-            --neon-glow: 0 0 20px rgba(208, 188, 255, 0.35);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
@@ -74,19 +70,39 @@
 
         @keyframes logoIn { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulseNeon { 0%, 100% { box-shadow: 0 0 10px var(--primary); } 50% { box-shadow: 0 0 35px var(--primary); } }
 
+        /* --- SPLASH SCREEN --- */
         #splash {
             position: absolute; inset: 0; background: #000; z-index: 10000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .logo-box {
             width: 110px; height: 110px; background: #151515; border-radius: 35px;
             display: flex; align-items: center; justify-content: center;
-            border: 2.5px solid var(--primary); animation: logoIn 0.8s ease-out, pulseNeon 3s infinite;
+            border: 2.5px solid var(--primary); animation: logoIn 0.8s ease-out;
+            box-shadow: 0 0 30px rgba(208, 188, 255, 0.2);
         }
-        .logo-box i { font-size: 65px; color: var(--primary); }
+
+        /* --- OVERLAYS & MODALS --- */
+        .overlay { position: absolute; inset: 0; background: #000; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 25px; }
+        .modal { 
+            background: #0a0a0a; padding: 35px; border-radius: 45px; width: 100%; 
+            border: 1.5px solid var(--glass-border); text-align: center; 
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        .notice-box {
+            background: rgba(208, 188, 255, 0.05);
+            border: 1px solid rgba(208, 188, 255, 0.2);
+            border-radius: 20px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 11px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
 
         .glass-card {
             background: var(--surface); backdrop-filter: blur(25px);
@@ -96,21 +112,13 @@
             animation: slideUp 0.6s ease;
         }
 
-        .periodic-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 15px 15px 15px; }
-        .p-stat { background: rgba(255,255,255,0.04); padding: 15px 5px; border-radius: 25px; text-align: center; border: 1px solid var(--glass-border); }
-        .p-stat small { font-size: 9px; color: var(--text-dim); display: block; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
-        .p-stat div { font-size: 14px; font-weight: 800; }
-
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 15px; }
-        .stat-box { background: #111; padding: 22px; border-radius: 32px; border: 1.5px solid var(--glass-border); position: relative; overflow: hidden; }
-        .stat-box::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary); }
-
         .btn-premium {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #000; border: none; padding: 18px; border-radius: 22px;
             font-weight: 800; cursor: pointer; width: 100%; display: flex;
             align-items: center; justify-content: center; gap: 10px; font-size: 15px;
-            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+            text-transform: uppercase; transition: 0.3s;
+            margin-top: 10px;
         }
         .btn-premium:active { transform: scale(0.96); opacity: 0.8; }
 
@@ -118,59 +126,59 @@
             width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
             padding: 16px; border-radius: 18px; color: #fff; margin-bottom: 12px; font-size: 16px;
         }
-        label { display: block; font-size: 11px; color: var(--primary); margin: 0 0 6px 10px; font-weight: 800; text-transform: uppercase; }
+        label { display: block; font-size: 11px; color: var(--primary); margin: 0 0 6px 10px; font-weight: 800; text-transform: uppercase; text-align: left; }
 
+        /* --- DASHBOARD ELEMENTS --- */
+        .periodic-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 15px 15px 15px; }
+        .p-stat { background: rgba(255,255,255,0.04); padding: 15px 5px; border-radius: 25px; text-align: center; border: 1px solid var(--glass-border); }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 15px; }
+        .stat-box { background: #111; padding: 22px; border-radius: 32px; border: 1.5px solid var(--glass-border); position: relative; }
+        
         nav {
             position: absolute; bottom: 25px; left: 15px; right: 15px; height: 80px;
-            background: rgba(25, 25, 25, 0.8); backdrop-filter: blur(30px);
+            background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(20px);
             display: flex; justify-content: space-around; align-items: center;
-            border-radius: 30px; border: 1px solid var(--glass-border); z-index: 999;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            border-radius: 30px; border: 1px solid var(--glass-border); z-index: 1000;
         }
-        .nav-item { background: none; border: none; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; flex: 1; cursor: pointer; font-weight: 800; font-size: 10px; transition: 0.3s; }
+        .nav-item { background: none; border: none; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; flex: 1; cursor: pointer; font-weight: 800; font-size: 10px; }
         .nav-item.active { color: var(--accent); }
         .nav-item i { font-size: 30px; margin-bottom: 2px; }
-        .nav-item.active i { transform: translateY(-8px) scale(1.2); text-shadow: 0 0 15px var(--accent); }
 
-        .journal-log { background: rgba(255,255,255,0.02); border-radius: 28px; padding: 22px; margin: 12px 15px; border-left: 6px solid #222; transition: 0.3s; }
-        .support-card { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 20px; background: #111; border: 1px solid var(--glass-border); text-decoration: none; color: #fff; font-size: 12px; font-weight: 800; margin-top: 12px; }
+        .journal-log { background: rgba(255,255,255,0.02); border-radius: 28px; padding: 22px; margin: 12px 15px; border-left: 6px solid #222; }
+        .sub-pill { background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 6px 15px; border-radius: 15px; font-size: 11px; font-weight: 800; }
+        .branding-footer { font-size: 10px; color: var(--text-dim); text-align: center; padding: 25px 0; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
 
-        header { padding: 45px 25px 15px 25px; }
-        h1 { font-size: 30px; font-weight: 800; margin: 0; letter-spacing: -1px; }
-
-        .cap-set { font-size: 10px; color: var(--accent); cursor: pointer; border: 1.5px solid var(--accent); padding: 2px 8px; border-radius: 8px; margin-left: 10px; font-weight: 800; }
+        .policy-link { color: var(--primary); text-decoration: none; font-weight: 800; }
         
-        .overlay { position: absolute; inset: 0; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 25px; }
-        .modal { background: #0a0a0a; padding: 35px; border-radius: 45px; width: 100%; border: 1.5px solid var(--glass-border); text-align: center; }
         .screen { display: none; }
         .screen.active { display: block; }
         .hidden { display: none !important; }
-
-        /* Payment UI */
-        .pay-badge { background: var(--primary); color: #000; padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 900; }
     </style>
 </head>
 <body>
 
     <div class="app-shell">
-        <!-- 1. Unique Splash Screen -->
+        <!-- 1. Splash Screen -->
         <div id="splash">
-            <div class="logo-box"><i class="material-icons-round">analytics</i></div>
-            <h2 style="margin:25px 0 5px 0; letter-spacing:1px; font-weight:800;">TradeTrack Pro</h2>
-            <p style="color:var(--primary); font-weight:800; letter-spacing:3px; font-size:12px;">NITAI STUDIO</p>
+            <div class="logo-box"><i class="material-icons-round" style="font-size: 60px; color: var(--primary);">analytics</i></div>
+            <h2 style="margin:20px 0 5px 0; letter-spacing:1px; font-weight:800;">TradeTrack Pro</h2>
+            <p style="color:var(--primary); font-weight:800; letter-spacing:3px; font-size:11px;">NITAI STUDIO | MADE IN INDIA</p>
         </div>
 
-        <!-- 2. Integrated Login with 244 Countries -->
+        <!-- 2. Global Login with Policies -->
         <div id="login-overlay" class="overlay hidden">
             <div class="modal">
                 <div class="logo-box" style="width:80px; height:80px; margin: 0 auto 20px auto; border-radius:24px;"><i class="material-icons-round">cloud_sync</i></div>
-                <h2 style="margin:0 0 5px 0">Account Sync</h2>
-                <p style="font-size:12px; color:var(--text-dim); margin-bottom:25px;">Enter your info to restore cloud data.</p>
+                <h2 style="margin:0 0 5px 0">Cloud Restore</h2>
                 
+                <div class="notice-box">
+                    <b>IMPORTANT:</b> TradeTrack Pro is a digital journal. We do not provide financial advice. All trade data is stored on Nitai Cloud. By logging in, you agree to our 7-day free trial policy.
+                </div>
+
                 <label>Language</label>
                 <select id="app-lang" onchange="app.updateLanguage()">
                     <option value="en">English (Global)</option>
-                    <option value="bn">বাংলা (BD/India)</option>
+                    <option value="bn">বাংলা (India/BD)</option>
                     <option value="hi">हिन्दी (India)</option>
                 </select>
 
@@ -178,55 +186,49 @@
                 <select id="user-country"></select>
 
                 <label>Mobile Number</label>
-                <input type="tel" id="user-mobile" placeholder="Enter Phone Number">
+                <input type="tel" id="user-mobile" placeholder="Enter Mobile Number">
                 
-                <button class="btn-premium" onclick="app.doLogin()">Sync & Start</button>
+                <button class="btn-premium" onclick="app.doLogin()">Restore & Accept Policy</button>
+                
+                <p style="font-size:10px; color:var(--text-dim); margin-top:15px;">
+                    Read our <a href="https://nitaistudio.github.io/Trade-Track-Pro/policies.html" class="policy-link" target="_blank">Privacy Policy</a>
+                </p>
             </div>
         </div>
 
-        <!-- 3. Policy Overlay -->
-        <div id="notice-overlay" class="overlay hidden">
-            <div class="modal">
-                <h2 style="color:var(--error); margin:0">IMPORTANT</h2>
-                <div style="max-height:45vh; overflow-y:auto; text-align:left; padding:15px; margin-top:15px; font-size:14px; color:var(--text-dim); line-height:1.7;" id="l-notice-text"></div>
-                <button class="btn-premium" style="margin-top:20px" onclick="app.acceptNotice()">I Understand</button>
-            </div>
-        </div>
-
-        <!-- 4. Subscription Paywall -->
+        <!-- 3. Lock Screen / Paywall (Trial Ends here) -->
         <div id="paywall-overlay" class="overlay hidden">
             <div class="modal">
-                <i class="material-icons-round" style="font-size: 60px; color: var(--accent);">workspace_premium</i>
-                <h2 style="margin:10px 0 5px 0">Trial Ended</h2>
-                <p style="font-size:13px; color:var(--text-dim); margin-bottom:20px;">Your 7-day free trial has expired. Subscribe to continue tracking.</p>
+                <i class="material-icons-round" style="font-size: 70px; color: var(--error);">lock_clock</i>
+                <h2 style="margin:15px 0 5px 0;">Access Expired</h2>
+                <p style="font-size:13px; color:var(--text-dim); margin-bottom:25px;">Your 7-day free trial has reached zero. Please subscribe to unlock your journal and continue tracking.</p>
                 
-                <div class="glass-card" style="margin:10px 0; padding:15px; text-align:left; border-color:var(--primary);" onclick="app.initPay(50, 'Monthly')">
+                <div class="glass-card" style="margin:10px 0; padding:18px; text-align:left; border-color:var(--primary);" onclick="app.initPay(50, 'Monthly')">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <b>Monthly Pro</b>
-                        <span class="pay-badge">POPULAR</span>
+                        <span style="background:var(--primary); color:#000; font-size:9px; padding:3px 8px; border-radius:6px; font-weight:900;">BEST SELLER</span>
                     </div>
-                    <div style="font-size:22px; font-weight:800; margin-top:5px;">₹50 <small style="font-size:12px; color:var(--text-dim)">/month</small></div>
+                    <div style="font-size:24px; font-weight:800; margin-top:5px;">₹50 <small style="font-size:12px; color:var(--text-dim)">/ month</small></div>
                 </div>
 
-                <div class="glass-card" style="margin:10px 0; padding:15px; text-align:left;" onclick="app.initPay(500, 'Yearly')">
+                <div class="glass-card" style="margin:10px 0; padding:18px; text-align:left;" onclick="app.initPay(500, 'Yearly')">
                     <b>Yearly Pro (Save ₹100)</b>
-                    <div style="font-size:22px; font-weight:800; margin-top:5px;">₹500 <small style="font-size:12px; color:var(--text-dim)">/year</small></div>
+                    <div style="font-size:24px; font-weight:800; margin-top:5px;">₹500 <small style="font-size:12px; color:var(--text-dim)">/ year</small></div>
                 </div>
                 
-                <p style="font-size:10px; color:var(--text-dim); margin-top:15px;">Secure Payment by Razorpay</p>
+                <p class="branding-footer" style="margin-top:20px;">Secure SSL Razorpay</p>
             </div>
         </div>
 
-        <!-- 5. Main App Interface -->
+        <!-- 4. Main App Content -->
         <div class="scroll-container" id="main-content" style="display:none;">
-            <header>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h1 id="screen-title">Dashboard</h1>
-                    <div style="width:50px; height:50px; background:var(--surface); border-radius:18px; display:flex; align-items:center; justify-content:center; border:1px solid var(--glass-border);" onclick="app.navigate('info')">
-                        <i class="material-icons-round" style="color:var(--primary); font-size:28px;">person</i>
-                    </div>
+            <header style="padding: 45px 25px 15px 25px; display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <h1 id="screen-title" style="margin:0; font-size:26px;">Dashboard</h1>
+                    <div id="user-id-tag" style="font-size:10px; color:var(--text-dim); font-weight:800; margin-top:5px; text-transform:uppercase;"></div>
                 </div>
-                <div id="user-id-tag" style="font-size:11px; color:var(--accent); font-weight:800; margin-top:8px; text-transform:uppercase;"></div>
+                <!-- Countdown Pill -->
+                <div id="sub-pill" class="sub-pill">Checking...</div>
             </header>
 
             <!-- Dash View -->
@@ -238,85 +240,90 @@
                 </div>
 
                 <div class="stat-grid">
-                    <div class="stat-box" style="border-bottom-color:var(--accent);"><small id="l-win-rate">Win Rate</small><div style="font-size:28px; font-weight:800; color:var(--accent); margin-top:5px;" id="d-win">0%</div></div>
-                    <div class="stat-box" style="border-bottom-color:var(--primary);"><small id="l-avg-rr">Avg RR</small><div style="font-size:28px; font-weight:800; margin-top:5px;" id="d-rr">0.00</div></div>
+                    <div class="stat-box"><small id="l-win-rate">Win Rate</small><div style="font-size:28px; font-weight:800; color:var(--accent); margin-top:5px;" id="d-win">0%</div></div>
+                    <div class="stat-box"><small id="l-avg-rr">Avg RR</small><div style="font-size:28px; font-weight:800; margin-top:5px;" id="d-rr">0.00</div></div>
                 </div>
 
                 <div class="stat-grid" style="margin-top:15px">
-                    <div class="stat-box" style="border-bottom-color:#555;">
-                        <div style="display:flex; align-items:center;">
-                            <small id="l-capital">Total Capital</small>
-                            <span class="cap-set" onclick="app.editCapital()">SET</span>
-                        </div>
+                    <div class="stat-box">
+                        <small id="l-capital">Capital</small>
                         <div style="font-size:20px; font-weight:800; margin-top:5px;" id="d-inv">₹0</div>
+                        <span style="font-size:9px; color:var(--accent); cursor:pointer;" onclick="app.editCapital()">[SET CAPITAL]</span>
                     </div>
-                    <div class="stat-box" style="border-bottom-color:var(--error);"><small id="l-net-pnl">Overall P/L</small><div style="font-size:20px; font-weight:800; margin-top:5px;" id="d-pnl">₹0</div></div>
+                    <div class="stat-box"><small id="l-net-pnl">Total P/L</small><div style="font-size:20px; font-weight:800; margin-top:5px;" id="d-pnl">₹0</div></div>
                 </div>
                 
-                <div class="glass-card" style="margin-top:20px; text-align:center; padding:15px; border-left: 6px solid var(--accent);">
-                    <small style="color:var(--text-dim); font-weight:800;">CURRENT BALANCE</small>
-                    <div id="d-balance" style="font-size:30px; font-weight:800; color:var(--accent); margin-top:5px;">₹0</div>
+                <div class="glass-card" style="margin-top:20px; text-align:center; border-left: 6px solid var(--accent);">
+                    <small style="color:var(--text-dim); font-weight:800;">ACCOUNT BALANCE</small>
+                    <div id="d-balance" style="font-size:32px; font-weight:800; color:var(--accent); margin-top:5px;">₹0</div>
                 </div>
 
-                <div style="padding:35px 25px 5px 25px;"><h3 id="l-recent-head" style="margin:0; font-size:20px;">History Entries</h3></div>
+                <div style="padding:30px 25px 5px 25px;"><h3 id="l-recent-head" style="margin:0; font-size:20px;">Recent Logs</h3></div>
                 <div id="list-recent"></div>
+                
+                <div class="branding-footer">Made by Nitai Studio | India 🇮🇳</div>
             </div>
 
-            <!-- Add View, History View, Info View remain same as your original -->
+            <!-- New Entry -->
             <div id="scr-add" class="screen">
                 <div class="glass-card">
-                    <label id="l-date">Trade Date</label><input type="date" id="t-date">
+                    <label>Trade Date</label><input type="date" id="t-date">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
-                        <div><label id="l-session">Session</label><select id="t-session"><option value="London">London 🇬🇧</option><option value="NY">New York 🇺🇸</option><option value="Asia">Asia 🇯🇵</option><option value="India">India 🇮🇳</option></select></div>
-                        <div><label id="l-logic">Strategy</label><select id="t-logic"><option value="Breakout">Breakout</option><option value="Trend">Trend Follow</option><option value="S/R">Supp/Resist</option></select></div>
+                        <div><label>Session</label><select id="t-session"><option value="India">India 🇮🇳</option><option value="London">London 🇬🇧</option><option value="NY">NY 🇺🇸</option><option value="Asia">Asia 🇯🇵</option></select></div>
+                        <div><label>Strategy</label><select id="t-logic"><option value="Breakout">Breakout</option><option value="Trend">Trend Follow</option><option value="S/R Bounce">S/R Bounce</option><option value="SMC">SMC/ICT</option></select></div>
                     </div>
-                    <label id="l-symbol">Asset Symbol</label><input type="text" id="t-symbol" placeholder="BTC, NIFTY...">
+                    <label>Asset Symbol</label><input type="text" id="t-symbol" placeholder="NIFTY, GOLD, BTC...">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
-                        <div><label id="l-rr">R:R Ratio</label><input type="number" step="0.1" id="t-rr" placeholder="1.5"></div>
-                        <div><label id="l-outcome">Trade Result</label><select id="t-outcome"><option value="Win">PROFIT (Win)</option><option value="Loss">LOSS (Loss)</option></select></div>
+                        <div><label>R:R Ratio</label><input type="number" step="0.1" id="t-rr" placeholder="1.5"></div>
+                        <div><label>Result</label><select id="t-outcome"><option value="Win">Win (Profit)</option><option value="Loss">Loss</option></select></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
-                        <div><label id="l-bq">Buy Price</label><input type="number" id="t-bq" placeholder="0"></div>
-                        <div><label id="l-sq">Sell Price</label><input type="number" id="t-sq" placeholder="0"></div>
+                        <div><label>Buy Price</label><input type="number" id="t-bq" placeholder="0"></div>
+                        <div><label>Sell Price</label><input type="number" id="t-sq" placeholder="0"></div>
                     </div>
-                    <label id="l-mistake">Trade Mistakes</label><textarea id="t-mistake" rows="3"></textarea>
+                    <label>Trade Mistakes / Notes</label><textarea id="t-mistake" rows="3"></textarea>
                     <button class="btn-premium" onclick="app.saveEntry()" id="l-save-btn">Sync to Journal</button>
                 </div>
             </div>
 
             <div id="scr-history" class="screen"><div id="list-history"></div></div>
 
+            <!-- Pro/Account Screen -->
             <div id="scr-info" class="screen">
                 <div class="glass-card" style="text-align:center;">
-                    <div class="logo-box" style="width:85px; height:85px; margin: 0 auto 20px auto; border-radius:24px;"><i class="material-icons-round">person_outline</i></div>
-                    <h2 style="margin:0; color:var(--primary);">NITAI STUDIO</h2>
-                    <p id="sub-status" style="font-size:12px; color:var(--accent); font-weight: 800; margin-top:5px;"></p>
+                    <div class="logo-box" style="width:80px; height:80px; margin: 0 auto 20px auto;"><i class="material-icons-round">verified_user</i></div>
+                    <h2 style="margin:0; color:var(--primary);">ACCOUNT PRO</h2>
+                    <p id="sub-status-info" style="font-size:14px; color:var(--accent); font-weight:800; margin-top:8px;"></p>
                     
-                    <div style="background:rgba(0,0,0,0.4); padding:15px; border-radius:20px; margin:20px 0; border:1px solid var(--glass-border); font-size:13px;">
-                        nitai.grp00@gmail.com
+                    <div id="trial-upgrade-box" class="hidden">
+                        <hr style="border:0; border-top:1px solid var(--glass-border); margin:20px 0;">
+                        <button class="btn-premium" onclick="app.initPay(50, 'Monthly')">Upgrade to Monthly (₹50)</button>
+                        <button class="btn-premium" style="margin-top:10px; background:var(--accent); color:#000;" onclick="app.initPay(500, 'Yearly')">Upgrade to Yearly (₹500)</button>
                     </div>
 
-                    <p style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; margin-bottom:10px;">Support & Donate</p>
-                    <a href="https://buymeacoffee.com/nitaigrp00a" class="support-card" target="_blank">☕ Buy Me a Coffee</a>
-                       <a href="https://nitaistudio.github.io/Trade-Track-Pro/policies.html" class="support-card" target="_blank">Policies</a>
-                    <button class="support-card" style="width:100%; border:none;" onclick="app.installPWA()"><i class="material-icons-round">get_app</i> Install App</button>
+                    <div style="background:rgba(0,0,0,0.4); padding:20px; border-radius:24px; margin:25px 0; border:1px solid var(--glass-border); font-size:12px; text-align:left;">
+                        <b>Cloud ID:</b> <span id="prof-id"></span><br>
+                        <b>Privacy Policy:</b> <a href="https://nitaistudio.github.io/Trade-Track-Pro/policies.html" class="policy-link" target="_blank">View Rules</a>
+                    </div>
 
-                    <button class="btn-premium" style="background:var(--error); color:#fff; margin-top:35px;" onclick="app.logout()">Logout</button>
+                    <a href="https://buymeacoffee.com/nitaigrp00a" class="btn-premium" style="background:#111; color:#fff; border:1px solid var(--glass-border);" target="_blank">☕ Support Developer</a>
+                    <button class="btn-premium" style="background:var(--error); color:#fff; margin-top:20px;" onclick="app.logout()">Logout Account</button>
                 </div>
+                <div class="branding-footer">v3.0 Final | MADE IN INDIA 🇮🇳</div>
             </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- Navbar -->
         <nav id="navbar" style="display:none;">
-            <button class="nav-item active" onclick="app.navigate('dash')"><i class="material-icons-round">dashboard</i><span id="n-dash">Dash</span></button>
-            <button class="nav-item" onclick="app.navigate('history')"><i class="material-icons-round">list_alt</i><span id="n-history">Logs</span></button>
-            <button class="nav-item" onclick="app.navigate('add')"><i class="material-icons-round" style="font-size:45px; color:var(--primary); margin-top:-10px">add_circle</i><span id="n-add">New</span></button>
-            <button class="nav-item" onclick="app.navigate('info')"><i class="material-icons-round">support_agent</i><span id="n-info">Support</span></button>
+            <button class="nav-item active" onclick="app.navigate('dash')"><i class="material-icons-round">dashboard</i>Dash</button>
+            <button class="nav-item" onclick="app.navigate('history')"><i class="material-icons-round">list_alt</i>Logs</button>
+            <button class="nav-item" onclick="app.navigate('add')"><i class="material-icons-round" style="font-size:45px; color:var(--primary); margin-top:-10px">add_circle</i></button>
+            <button class="nav-item" onclick="app.navigate('info')"><i class="material-icons-round">verified</i>Pro</button>
         </nav>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
+        // --- 1. FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyBXAYmNjcXXUqbkNFdzVa6TbxotPH9PcNM",
             authDomain: "trade-track-pro-cd6a7.firebaseapp.com",
@@ -329,72 +336,74 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // --- 2. MULTI-LANG DATA ---
         const i18n = {
-            en: { notice: "Trade Track Pro is not a financial advisor and does not provide investment or trading advice.
-This app is intended only for trade tracking and record-keeping purposes.
-All trading decisions and financial risks are solely the responsibility of the user.", today: "Today", weekly: "Weekly", monthly: "Monthly", win_rate: "Win Rate", avg_rr: "Avg RR", capital: "Total Capital", net_pnl: "Overall P/L", recent_head: "History Entries", save_btn: "Sync to Journal" },
-            bn: { notice: "Trade Track Pro কোনো আর্থিক পরামর্শদাতা নয় এবং বিনিয়োগ বা ট্রেডিং পরামর্শ দেয় না।
-এই অ্যাপটি শুধুমাত্র ট্রেড ট্র্যাকিং ও রেকর্ড রাখার জন্য ব্যবহৃত হয়।
-সব ধরনের ট্রেডিং সিদ্ধান্ত ও আর্থিক ঝুঁকি সম্পূর্ণভাবে ব্যবহারকারীর দায়িত্ব।", today: "আজকের", weekly: "সাপ্তাহিক", monthly: "মাসিক", win_rate: "উইন রেট", avg_rr: "গড় RR", capital: "মোট ক্যাপিটাল", net_pnl: "সর্বমোট লাভ", recent_head: "ইতিহাস লগ", save_btn: "জার্নালে সেভ করুন" },
-            hi: { notice: "Trade Track Pro कोई वित्तीय सलाहकार नहीं है और निवेश या ट्रेडिंग सलाह प्रदान नहीं करता।
-यह ऐप केवल ट्रेड ट्रैकिंग और रिकॉर्ड रखने के लिए है।
-सभी ट्रेडिंग निर्णय और वित्तीय जोखिम पूरी तरह उपयोगकर्ता की जिम्मेदारी हैं।", today: "आज", weekly: "साप्ताहिक", monthly: "मासिक", win_rate: "जीत दर", avg_rr: "औसत RR", capital: "कुल पूंजी", net_pnl: "कुल लाभ", recent_head: "हाल के रिकॉर्ड", save_btn: "सेव करें" }
+            en: { today: "Today", win_rate: "Win Rate", avg_rr: "Avg RR", capital: "Capital", net_pnl: "Total P/L", recent_head: "Recent Entries", save_btn: "Sync to Journal" },
+            bn: { today: "আজকের", win_rate: "উইন রেট", avg_rr: "গড় RR", capital: "ক্যাপিটাল", net_pnl: "মোট লাভ", recent_head: "ইতিহাস লগ", save_btn: "জার্নালে সেভ করুন" },
+            hi: { today: "आज", win_rate: "जीत दर", avg_rr: "औसत RR", capital: "कुल पूंजी", net_pnl: "कुल लाभ", recent_head: "हाल के रिकॉर्ड", save_btn: "सेव करें" }
         };
 
-        const countries = [{"n":"India","c":"+91"},{"n":"Bangladesh","c":"+880"},{"n":"USA","c":"+1"},{"n":"UK","c":"+44"},{"n":"UAE","c":"+971"},{"n":"Australia","c":"+61"},{"n":"Canada","c":"+1"},{"n":"Singapore","c":"+65"},{"n":"Germany","c":"+49"},{"n":"France","c":"+33"}]; // Extended via loop in init
+        const countries = [{"n":"India","c":"+91"},{"n":"Bangladesh","c":"+880"},{"n":"USA","c":"+1"},{"n":"UK","c":"+44"},{"n":"UAE","c":"+971"},{"n":"Singapore","c":"+65"},{"n":"Nepal","c":"+977"}];
 
+        // --- 3. CORE APP ENGINE ---
         const app = {
-            user: null, lang: 'en', trades: [], capital: 0, deferredPrompt: null, subData: null,
-            init: async function() {
+            user: null, lang: 'en', trades: [], capital: 0, sub: null,
+            init: function() {
                 this.loadCountries();
-                this.lang = localStorage.getItem('nt_lang_final_pro') || 'en';
+                this.lang = localStorage.getItem('nt_lang_pro_v3') || 'en';
                 document.getElementById('app-lang').value = this.lang;
                 this.updateLanguage();
-                this.setupPWA();
-                setTimeout(() => { document.getElementById('splash').style.display='none'; this.checkAuth(); }, 2500);
+                if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+                // Splash Timer Fix
+                setTimeout(() => {
+                    document.getElementById('splash').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('splash').style.display = 'none';
+                        this.checkAuth();
+                    }, 500);
+                }, 3000);
             },
             loadCountries: function() {
                 const sel = document.getElementById('user-country');
-                countries.forEach(co => {
-                    let opt = new Option(`${co.n} (${co.c})`, co.c);
-                    sel.add(opt);
+                countries.forEach(co => sel.add(new Option(`${co.n} (${co.c})`, co.c)));
+            },
+            updateLanguage: function() {
+                this.lang = document.getElementById('app-lang').value;
+                localStorage.setItem('nt_lang_pro_v3', this.lang);
+                const t = i18n[this.lang];
+                ["today", "win_rate", "avg_rr", "capital", "net_pnl", "recent_head", "save_btn"].forEach(k => {
+                    const el = document.getElementById('l-' + k); if(el) el.innerText = t[k];
                 });
             },
-            setupPWA: function() {
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('sw.js');
-                }
-                window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.deferredPrompt = e; });
-            },
-            installPWA: function() {
-                if(this.deferredPrompt) { this.deferredPrompt.prompt(); this.deferredPrompt = null; }
-                else alert("Add to Home Screen via Browser Menu");
-            },
             checkAuth: function() {
-                const u = localStorage.getItem('nt_user_final_pro');
-                const n = localStorage.getItem('nt_notice_final_pro');
+                const u = localStorage.getItem('nt_user_pro_v3');
                 if(!u) document.getElementById('login-overlay').classList.remove('hidden');
-                else if(!n) { this.user = u; document.getElementById('notice-overlay').classList.remove('hidden'); }
                 else { this.user = u; this.verifySubscription(); }
             },
+            doLogin: function() {
+                const c = document.getElementById('user-country').value;
+                const p = document.getElementById('user-mobile').value.trim();
+                if(p.length < 8) return alert("Valid Mobile Required!");
+                this.user = c + p;
+                localStorage.setItem('nt_user_pro_v3', this.user);
+                document.getElementById('login-overlay').classList.add('hidden');
+                this.verifySubscription();
+            },
             verifySubscription: function() {
-                db.ref('jhakkas_pro_users/' + this.user + '/subscription').on('value', (snap) => {
+                db.ref('jhakkas_pro_users/' + this.user + '/subscription').on('value', snap => {
                     const data = snap.val();
                     const now = Date.now();
-                    
                     if(!data) {
-                        // Create New User 7-Day Trial
-                        const trialExpiry = now + (7 * 24 * 60 * 60 * 1000);
-                        db.ref('jhakkas_pro_users/' + this.user + '/subscription').set({
-                            type: 'Trial',
-                            expiry: trialExpiry
-                        });
-                        this.startApp();
+                        const trialExp = now + (7 * 24 * 60 * 60 * 1000);
+                        db.ref('jhakkas_pro_users/' + this.user + '/subscription').set({ type: 'Trial', expiry: trialExp });
                     } else {
-                        this.subData = data;
+                        this.sub = data;
+                        this.updateSubUI();
                         if(now > data.expiry) {
                             document.getElementById('paywall-overlay').classList.remove('hidden');
                             document.getElementById('main-content').style.display = 'none';
+                            document.getElementById('navbar').style.display = 'none';
                         } else {
                             document.getElementById('paywall-overlay').classList.add('hidden');
                             this.startApp();
@@ -402,68 +411,37 @@ All trading decisions and financial risks are solely the responsibility of the u
                     }
                 });
             },
+            updateSubUI: function() {
+                const now = Date.now();
+                const daysLeft = Math.ceil((this.sub.expiry - now) / (1000 * 60 * 60 * 24));
+                const txt = daysLeft > 0 ? daysLeft + " Days Left" : "Expired";
+                document.getElementById('sub-pill').innerText = txt;
+                document.getElementById('sub-status-info').innerText = this.sub.type + " Plan: " + txt;
+                
+                if(this.sub.type === 'Trial') document.getElementById('trial-upgrade-box').classList.remove('hidden');
+                else document.getElementById('trial-upgrade-box').classList.add('hidden');
+            },
             initPay: function(amt, plan) {
                 const options = {
                     "key": "rzp_live_Rz7kQ4RAloCWGp",
-                    "amount": amt * 100,
-                    "currency": "INR",
-                    "name": "TradeTrack Pro",
-                    "description": plan + " Subscription",
-                    "handler": (res) => {
-                        const newExpiry = Date.now() + (plan === 'Monthly' ? 30 : 365) * 24 * 60 * 60 * 1000;
+                    "amount": amt * 100, "currency": "INR",
+                    "name": "TradeTrack Pro", "description": plan + " Upgrade",
+                    "handler": res => {
+                        const base = Math.max(Date.now(), this.sub.expiry);
+                        const dur = (plan === 'Monthly' ? 30 : 365) * 24 * 60 * 60 * 1000;
                         db.ref('jhakkas_pro_users/' + this.user + '/subscription').update({
-                            type: 'Pro',
-                            expiry: newExpiry,
-                            pid: res.razorpay_payment_id
-                        }).then(() => {
-                            alert("Payment Successful! Pro Unlocked.");
-                            location.reload();
-                        });
+                            type: 'Pro', expiry: base + dur, pid: res.razorpay_payment_id
+                        }).then(() => location.reload());
                     },
-                    "prefill": { "contact": this.user },
-                    "theme": { "color": "#d0bcff" }
+                    "prefill": { "contact": this.user }, "theme": { "color": "#d0bcff" }
                 };
-                const rzp = new Razorpay(options);
-                rzp.open();
-            },
-            updateLanguage: function() {
-                this.lang = document.getElementById('app-lang').value;
-                localStorage.setItem('nt_lang_final_pro', this.lang);
-                const t = i18n[this.lang];
-                document.getElementById('l-notice-text').innerText = t.notice;
-                document.getElementById('l-today').innerText = t.today;
-                document.getElementById('l-weekly').innerText = t.weekly;
-                document.getElementById('l-monthly').innerText = t.monthly;
-                document.getElementById('l-win-rate').innerText = t.win_rate;
-                document.getElementById('l-avg-rr').innerText = t.avg_rr;
-                document.getElementById('l-capital').innerText = t.capital;
-                document.getElementById('l-net-pnl').innerText = t.net_pnl;
-                document.getElementById('l-recent-head').innerText = t.recent_head;
-                document.getElementById('l-save-btn').innerText = t.save_btn;
-            },
-            doLogin: function() {
-                const c = document.getElementById('user-country').value;
-                const p = document.getElementById('user-mobile').value.trim();
-                if(p.length < 7) return alert("Valid number required!");
-                const fullId = c + p;
-                localStorage.setItem('nt_user_final_pro', fullId);
-                this.user = fullId;
-                document.getElementById('login-overlay').classList.add('hidden');
-                this.checkAuth();
-            },
-            acceptNotice: function() { 
-                localStorage.setItem('nt_notice_final_pro', 'true'); 
-                document.getElementById('notice-overlay').classList.add('hidden'); 
-                this.verifySubscription(); 
+                new Razorpay(options).open();
             },
             startApp: function() {
                 document.getElementById('main-content').style.display = 'block';
                 document.getElementById('navbar').style.display = 'flex';
-                document.getElementById('user-id-tag').innerText = "PRO USER: " + this.user;
-                if(this.subData) {
-                    const daysLeft = Math.ceil((this.subData.expiry - Date.now()) / (1000*60*60*24));
-                    document.getElementById('sub-status').innerText = `${this.subData.type} Plan: ${daysLeft} days left`;
-                }
+                document.getElementById('user-id-tag').innerText = "Cloud Sync: " + this.user;
+                document.getElementById('prof-id').innerText = this.user;
                 this.navigate('dash');
             },
             navigate: function(id) {
@@ -475,7 +453,7 @@ All trading decisions and financial risks are solely the responsibility of the u
                 this.fetchData();
             },
             fetchData: function() {
-                db.ref('jhakkas_pro_users/' + this.user).on('value', (snap) => {
+                db.ref('jhakkas_pro_users/' + this.user).on('value', snap => {
                     const data = snap.val();
                     this.trades = data && data.trades ? Object.values(data.trades).sort((a,b) => b.ts - a.ts) : [];
                     this.capital = data && data.capital ? data.capital : 0;
@@ -483,12 +461,12 @@ All trading decisions and financial risks are solely the responsibility of the u
                 });
             },
             editCapital: function() {
-                const val = prompt("Enter Trading Capital Amount:", this.capital);
-                if(val !== null && !isNaN(val)) db.ref('jhakkas_pro_users/' + this.user + '/capital').set(parseFloat(val));
+                const v = prompt("Enter Trading Capital:", this.capital);
+                if(v && !isNaN(v)) db.ref('jhakkas_pro_users/' + this.user + '/capital').set(parseFloat(v));
             },
             saveEntry: function() {
                 const sym = document.getElementById('t-symbol').value.toUpperCase().trim();
-                if(!sym) return alert("Enter Asset Symbol!");
+                if(!sym) return alert("Enter Symbol!");
                 const entry = {
                     date: document.getElementById('t-date').value || new Date().toISOString().split('T')[0],
                     sym: sym, session: document.getElementById('t-session').value,
@@ -500,58 +478,43 @@ All trading decisions and financial risks are solely the responsibility of the u
                     mistake: document.getElementById('t-mistake').value, ts: Date.now()
                 };
                 db.ref('jhakkas_pro_users/' + this.user + '/trades').push(entry).then(() => {
-                    alert("Synced Successfully!"); this.navigate('dash');
+                    alert("Entry Synced!"); this.navigate('dash');
                 });
             },
             render: function() {
-                const now = new Date();
-                const todayStr = now.toISOString().split('T')[0];
-                const weekStart = new Date(now.setDate(now.getDate() - now.getDay())).toISOString().split('T')[0];
-                const monthStart = todayStr.substring(0, 7) + "-01";
-
-                let dP = 0, wP = 0, mP = 0, tP = 0, totalRR = 0;
+                const today = new Date().toISOString().split('T')[0];
+                let dP=0, tP=0, totalRR=0;
                 this.trades.forEach(t => {
-                    const pnl = t.sq - t.bq;
-                    tP += pnl; totalRR += t.rr;
-                    if(t.date === todayStr) dP += pnl;
-                    if(t.date >= weekStart) wP += pnl;
-                    if(t.date >= monthStart) mP += pnl;
+                    const pnl = t.sq - t.bq; tP += pnl; totalRR += t.rr;
+                    if(t.date === today) dP += pnl;
                 });
-
-                const totalTrades = this.trades.length;
-                const wins = this.trades.filter(t => t.outcome === 'Win').length;
-                const winRate = totalTrades > 0 ? ((wins/totalTrades)*100).toFixed(0) : 0;
-
-                const colorMe = (val, id) => {
-                    const el = document.getElementById(id);
-                    el.innerText = (val>=0?'+':'') + "₹" + val.toLocaleString();
-                    el.style.color = val>=0?'var(--success)':'var(--error)';
-                };
-
-                colorMe(dP, 'd-today'); colorMe(wP, 'd-weekly'); colorMe(mP, 'd-monthly');
-                colorMe(tP, 'd-pnl');
+                const wr = this.trades.length ? ((this.trades.filter(x=>x.outcome==='Win').length/this.trades.length)*100).toFixed(0) : 0;
+                
+                const format = val => (val>=0?'+':'') + "₹" + val.toLocaleString();
+                document.getElementById('d-today').innerText = format(dP);
+                document.getElementById('d-today').style.color = dP>=0?'var(--success)':'var(--error)';
+                document.getElementById('d-pnl').innerText = format(tP);
+                document.getElementById('d-pnl').style.color = tP>=0?'var(--success)':'var(--error)';
+                
                 document.getElementById('d-inv').innerText = "₹" + this.capital.toLocaleString();
                 document.getElementById('d-balance').innerText = "₹" + (this.capital + tP).toLocaleString();
-                document.getElementById('d-win').innerText = winRate + "%";
-                document.getElementById('d-rr').innerText = totalTrades ? (totalRR/totalTrades).toFixed(2) : "0.00";
+                document.getElementById('d-balance').style.color = (this.capital + tP) >= 0 ? 'var(--accent)' : 'var(--error)';
+                
+                document.getElementById('d-win').innerText = wr + "%";
+                document.getElementById('d-rr').innerText = this.trades.length ? (totalRR/this.trades.length).toFixed(2) : "0.00";
 
-                const logHTML = (t) => `
-                    <div class="journal-log" style="border-left-color:${t.outcome === 'Win'?'var(--success)':'var(--error)'}">
-                        <div style="display:flex; justify-content:space-between;">
-                            <div><b>${t.sym}</b><br><small style="color:var(--text-dim)">${t.date} • ${t.logic}</small></div>
-                            <div style="text-align:right">
-                                <b style="color:${t.sq-t.bq>=0?'var(--success)':'var(--error)'}">${(t.sq-t.bq).toFixed(2)}</b><br>
-                                <small style="color:var(--text-dim)">RR ${t.rr}</small>
-                            </div>
-                        </div>
-                    </div>`;
-                document.getElementById('list-recent').innerHTML = this.trades.slice(0,5).map(logHTML).join('');
-                document.getElementById('list-history').innerHTML = this.trades.map(logHTML).join('');
+                const log = t => `<div class="journal-log" style="border-left-color:${t.sq-t.bq>=0?'var(--success)':'var(--error)'}">
+                    <div style="display:flex; justify-content:space-between">
+                        <b>${t.sym}</b> <b style="color:${t.sq-t.bq>=0?'var(--success)':'var(--error)'}">${(t.sq-t.bq).toFixed(2)}</b>
+                    </div>
+                    <small>${t.date} | ${t.logic}</small>
+                </div>`;
+                document.getElementById('list-recent').innerHTML = this.trades.slice(0,5).map(log).join('');
+                document.getElementById('list-history').innerHTML = this.trades.map(log).join('');
             },
-            logout: function() { if(confirm("Logout? Data is safe in Nitai Cloud.")){ localStorage.clear(); window.location.reload(); } }
+            logout: function() { if(confirm("Logout? All data is safe.")) { localStorage.clear(); location.reload(); } }
         };
-
-        window.onload = () => { app.init(); document.getElementById('t-date').valueAsDate = new Date(); };
+        window.onload = () => app.init();
     </script>
 </body>
 </html>
